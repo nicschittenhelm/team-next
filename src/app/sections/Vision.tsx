@@ -61,12 +61,11 @@ export default function Vision() {
   const backendRef = useRef<HTMLDivElement>(null);
   const processRef = useRef<HTMLDivElement>(null);
   const aiRef = useRef<HTMLDivElement>(null);
-
   // Icon references for animation
-  const frontendIconRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const backendIconRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const processIconRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const aiIconRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const frontendIconRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const backendIconRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const processIconRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const aiIconRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -230,7 +229,7 @@ export default function Vision() {
                 {frontendIcons.map((icon, index) => (
                   <div
                     key={icon.id}
-                    ref={(el: HTMLDivElement | null) => {
+                    ref={(el) => {
                       frontendIconRefs.current[index] = el;
                     }}
                     className="absolute w-10 h-10 md:w-14 md:h-14"
@@ -290,10 +289,13 @@ export default function Vision() {
             <div className="w-full md:w-1/2 mt-10 md:mt-0 relative h-64 md:h-96 image-container">
               {/* Icon cloud background */}
               <div className="absolute inset-0 flex items-center justify-center">
+                {" "}
                 {backendIcons.map((icon, index) => (
                   <div
                     key={icon.id}
-                    ref={(el) => (backendIconRefs.current[index] = el)}
+                    ref={(el) => {
+                      backendIconRefs.current[index] = el;
+                    }}
                     className="absolute w-10 h-10 md:w-14 md:h-14"
                   >
                     <Image
