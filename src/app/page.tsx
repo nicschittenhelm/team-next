@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Hero from "./sections/Hero";
 import Team from "./sections/Team";
+import Vision from "./sections/Vision";
 
 export default function Home() {
   useEffect(() => {
@@ -19,6 +20,7 @@ export default function Home() {
       <div className="relative">
         <Hero />
         <Team />
+        <Vision />
       </div>
     </main>
   );
