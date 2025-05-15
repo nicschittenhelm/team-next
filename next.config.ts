@@ -1,9 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  images: {
-    domains: ["randomuser.me"],
-  },
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "export",
+  trailingSlash: true,
+  basePath: "/team-next",
+  assetPrefix: "/team-next",
 };
 
 export default nextConfig;

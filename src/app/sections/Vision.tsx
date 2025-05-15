@@ -352,7 +352,9 @@ export default function Vision() {
                 {processIcons.map((icon, index) => (
                   <div
                     key={icon.id}
-                    ref={(el) => (processIconRefs.current[index] = el)}
+                    ref={(el) => {
+                      processIconRefs.current[index] = el;
+                    }}
                     className="absolute w-10 h-10 md:w-14 md:h-14"
                   >
                     <Image
@@ -409,7 +411,9 @@ export default function Vision() {
                 {aiIcons.map((icon, index) => (
                   <div
                     key={icon.id}
-                    ref={(el) => (aiIconRefs.current[index] = el)}
+                    ref={(el) => {
+                      aiIconRefs.current[index] = el;
+                    }}
                     className="absolute w-10 h-10 md:w-14 md:h-14"
                   >
                     <Image
