@@ -23,11 +23,11 @@ const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
     return (
       <div
         ref={ref}
-        className="cursor-pointer group"
+        className="cursor-pointer group transition-transform duration-300"
         style={{ willChange: "transform", perspective: "1000px" }}
       >
         <div
-          className="relative w-64 h-80 overflow-hidden rounded-2xl shadow-xl 
+          className="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-xl 
                     transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl
                     bg-gradient-to-b from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-white/10"
         >

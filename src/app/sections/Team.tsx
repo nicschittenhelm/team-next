@@ -15,20 +15,7 @@ if (typeof window !== "undefined") {
 export default function Team() {
   const containerRef = useRef<HTMLDivElement>(null);
   const teamRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // Calculate initial positions - improved with wider spacing to prevent overlap
-  const getInitialPosition = (index: number) => {
-    // Create a more distributed pattern across the screen with increased spacing
-    const patterns = [
-      { x: -110, y: -70 }, // Top left - moved further out
-      { x: 0, y: -80 }, // Top center - moved higher
-      { x: 110, y: -70 }, // Top right - moved further out
-      { x: -110, y: 70 }, // Bottom left - moved further out
-      { x: 0, y: 80 }, // Bottom center - moved lower
-      { x: 110, y: 70 }, // Bottom right - moved further out
-    ];
-
-    return patterns[index % patterns.length];
-  };
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Set up mouse tracking
   useEffect(() => {
@@ -42,6 +29,7 @@ export default function Team() {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
   // Initialize animations
   useEffect(() => {
     // Skip if not in browser environment
@@ -52,34 +40,31 @@ export default function Team() {
       teamRefs.current.forEach((elem, index) => {
         if (!elem) return;
 
-        const position = getInitialPosition(index);
-
-        // Set initial position and properties
+        // Set initial properties
         gsap.set(elem, {
-          x: `${position.x}%`,
-          y: `${position.y}%`,
           opacity: 0,
-          scale: 0.8,
-          rotation: gsap.utils.random(-3, 3),
-          transformOrigin: "center center",
+          y: 20,
+          scale: 0.95,
         });
 
         // Animate in
         gsap.to(elem, {
           opacity: 1,
+          y: 0,
           scale: 1,
-          duration: 1.2,
-          delay: index * 0.15,
-          ease: "power3.out",
+          duration: 0.8,
+          delay: index * 0.1,
+          ease: "power2.out",
         });
-      }); // Create scroll-based parallax effect - gentle vertical movement
-      // Removed scroll-based animation so cards only move based on mouse input
+      });
     }, containerRef);
 
     return () => ctx.revert(); // Clean up all GSAP animations
-  }, []); // Mouse following effect - proximity-based cursor tracking
+  }, []);
+
+  // Mouse following effect - enhanced with extreme movement for dramatic effect
   useEffect(() => {
-    teamRefs.current.forEach((elem, index) => {
+    teamRefs.current.forEach((elem) => {
       if (!elem) return;
 
       // Get the element's current position in the viewport
@@ -87,34 +72,39 @@ export default function Team() {
       const cardCenterX = rect.left + rect.width / 2;
       const cardCenterY = rect.top + rect.height / 2;
 
-      // Calculate distance between mouse and card center (normalized 0-1)
+      // Calculate distance between mouse and card center
       const mouseX =
         (mousePosition.x * window.innerWidth) / 2 + window.innerWidth / 2;
       const mouseY =
-        (mousePosition.y * window.innerHeight) / 2 + window.innerHeight / 2; // Calculate distance between mouse and card
+        (mousePosition.y * window.innerHeight) / 2 + window.innerHeight / 2;
       const deltaX = mouseX - cardCenterX;
       const deltaY = mouseY - cardCenterY;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       // Normalize distance (closer = higher value)
-      // Max distance considered is 800px, beyond that minimal effect
-      const proximity = Math.max(0, 1 - distance / 800);
+      // Increase the effect range to 1000px for a wider area of influence
+      const maxDistance = 1000;
+      // More aggressive proximity calculation
+      const proximity = Math.max(
+        0,
+        1 - Math.min(distance, maxDistance) / maxDistance
+      );
+      // Apply additional power curve to make closer cards move even more dramatically
+      const powerProximity = Math.pow(proximity, 1.2);
 
-      // Base movement factor
-      const baseFactor = 0.55 + (index % 3) * 0.05;
+      // Super enhanced movement factors - dramatically increased for extreme effect
+      const moveX = deltaX * 0.25 * powerProximity; // Further increased from 0.12
+      const moveY = deltaY * 0.25 * powerProximity; // Further increased from 0.12
 
-      // Position from layout grid
-      const position = getInitialPosition(index);
-
-      // Move TOWARD the mouse (magnet effect) - directly use the delta values
+      // Apply enhanced effects with more dramatic movement, tilt and scale
       gsap.to(elem, {
-        x: `${position.x + deltaX * 0.04 * proximity * baseFactor}%`,
-        y: `${position.y + deltaY * 0.04 * proximity * baseFactor}%`,
-        // Tilt effect intensifies with proximity
-        rotationY: -deltaX * 0.02 * proximity,
-        rotationX: deltaY * 0.02 * proximity,
-        duration: 1.2, // Responsive feel
-        ease: "power2.out",
+        x: moveX,
+        y: moveY,
+        rotationY: -deltaX * 0.06 * proximity, // Increased tilt effect
+        rotationX: deltaY * 0.06 * proximity, // Increased tilt effect
+        scale: 1 + 0.12 * proximity, // Increased scale effect
+        duration: 0.4, // Even faster response time for snappier feel
+        ease: "power1.out", // Changed ease to make it feel more immediate
         overwrite: "auto",
       });
     });
@@ -125,7 +115,7 @@ export default function Team() {
       className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-900 to-black py-16"
       ref={containerRef}
     >
-      {/* Heading */}{" "}
+      {/* Heading */}
       <div className="container mx-auto text-center mb-10 z-10 relative">
         <h2 className="text-5xl font-bold mb-3 text-white tracking-tight">
           Our Team
@@ -135,26 +125,36 @@ export default function Team() {
           solutions of tomorrow. A diverse team of experts crafting innovative
           software with cutting-edge technologies.
         </p>
-      </div>{" "}
-      {/* Team container - improved positioning */}
-      <div className="relative w-full h-[80vh] md:h-[85vh] flex items-center justify-center px-4 pb-10">
-        {/* Enhanced background glow effects */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-[30rem] h-[30rem] bg-cyan-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/3 left-1/3 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl"></div>
-
-        {/* Team members */}
-        {teamMembers.map((member, index) => (
-          <TeamCard
-            key={member.id}
-            member={member}
-            ref={(el) => {
-              teamRefs.current[index] = el;
-            }}
-          />
-        ))}
       </div>
+
+      {/* Two-column layout container */}
+      <div className="container mx-auto flex flex-col lg:flex-row">
+        {/* Left side - Team grid */}
+        <div className="w-full lg:w-1/2 px-4 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            {teamMembers.map((member, index) => (
+              <TeamCard
+                key={member.id}
+                member={member}
+                ref={(el) => {
+                  teamRefs.current[index] = el;
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right side - Empty space for future content */}
+        <div className="w-full lg:w-1/2 px-4">
+          {/* This space is intentionally left empty for future content */}
+        </div>
+      </div>
+
+      {/* Background glow effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>
+      <div className="absolute bottom-1/4 right-1/3 w-[30rem] h-[30rem] bg-cyan-500/20 rounded-full blur-3xl -z-10"></div>
+      <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl -z-10"></div>
+      <div className="absolute bottom-1/3 left-1/3 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl -z-10"></div>
     </section>
   );
 }
