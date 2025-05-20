@@ -17,12 +17,23 @@ export default function Team() {
   const teamRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // Animation configuration parameters
+  const config = {
+    attractionDistance: 300, // Distance in pixels where attraction begins
+    maxMovement: 40, // Maximum distance in pixels a card can move from its original position
+    attractionStrength: 0.3, // How strongly cards are attracted to the cursor (0-1)
+    returnSpeed: 0.8, // How fast cards return to their original position (0-1)
+  };
+
+  // Store original positions of team cards
+  const originalPositions = useRef<{ x: number; y: number }[]>([]);
+
   // Set up mouse tracking
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       setMousePosition({
-        x: (event.clientX / window.innerWidth - 0.5) * 2, // -1 to 1
-        y: (event.clientY / window.innerHeight - 0.5) * 2, // -1 to 1
+        x: event.clientX,
+        y: event.clientY,
       });
     };
 
@@ -30,85 +41,84 @@ export default function Team() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Initialize animations
+  // Set up card movement animation
   useEffect(() => {
-    // Skip if not in browser environment
-    if (typeof window === "undefined") return;
+    // Skip if no references or window is not available
+    if (typeof window === "undefined" || !teamRefs.current.length) return;
 
-    const ctx = gsap.context(() => {
-      // Initial animation for each team member
-      teamRefs.current.forEach((elem, index) => {
-        if (!elem) return;
-
-        // Set initial properties
-        gsap.set(elem, {
-          opacity: 0,
-          y: 20,
-          scale: 0.95,
-        });
-
-        // Animate in
-        gsap.to(elem, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.8,
-          delay: index * 0.1,
-          ease: "power2.out",
-        });
+    // Store original positions of all cards (once)
+    if (originalPositions.current.length === 0) {
+      originalPositions.current = teamRefs.current.map((ref) => {
+        if (!ref) return { x: 0, y: 0 };
+        const rect = ref.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2, // Center X
+          y: rect.top + rect.height / 2, // Center Y
+        };
       });
-    }, containerRef);
+    }
 
-    return () => ctx.revert(); // Clean up all GSAP animations
-  }, []);
+    // Animation loop for card attraction
+    const animateCards = () => {
+      teamRefs.current.forEach((ref) => {
+        if (!ref) return;
+        const rect = ref.getBoundingClientRect();
+        const cardCenterX = rect.left + rect.width / 2;
+        const cardCenterY = rect.top + rect.height / 2;
 
-  // Mouse following effect - enhanced with extreme movement for dramatic effect
-  useEffect(() => {
-    teamRefs.current.forEach((elem) => {
-      if (!elem) return;
+        // Calculate distance between mouse and card center
+        const deltaX = mousePosition.x - cardCenterX;
+        const deltaY = mousePosition.y - cardCenterY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-      // Get the element's current position in the viewport
-      const rect = elem.getBoundingClientRect();
-      const cardCenterX = rect.left + rect.width / 2;
-      const cardCenterY = rect.top + rect.height / 2;
+        // Determine if card should be attracted to cursor
+        if (distance < config.attractionDistance) {
+          // Calculate movement amount based on distance (closer = stronger attraction)
+          const attractionFactor =
+            1 - Math.min(distance / config.attractionDistance, 1);
+          const moveFactor = attractionFactor * config.attractionStrength;
 
-      // Calculate distance between mouse and card center
-      const mouseX =
-        (mousePosition.x * window.innerWidth) / 2 + window.innerWidth / 2;
-      const mouseY =
-        (mousePosition.y * window.innerHeight) / 2 + window.innerHeight / 2;
-      const deltaX = mouseX - cardCenterX;
-      const deltaY = mouseY - cardCenterY;
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          // Calculate new position with limited movement
+          const moveX =
+            Math.min(Math.abs(deltaX * moveFactor), config.maxMovement) *
+            Math.sign(deltaX);
+          const moveY =
+            Math.min(Math.abs(deltaY * moveFactor), config.maxMovement) *
+            Math.sign(deltaY);
 
-      // Normalize distance (closer = higher value)
-      // Increase the effect range to 1000px for a wider area of influence
-      const maxDistance = 1000;
-      // More aggressive proximity calculation
-      const proximity = Math.max(
-        0,
-        1 - Math.min(distance, maxDistance) / maxDistance
-      );
-      // Apply additional power curve to make closer cards move even more dramatically
-      const powerProximity = Math.pow(proximity, 1.2);
-
-      // Super enhanced movement factors - dramatically increased for extreme effect
-      const moveX = deltaX * 0.25 * powerProximity; // Further increased from 0.12
-      const moveY = deltaY * 0.25 * powerProximity; // Further increased from 0.12
-
-      // Apply enhanced effects with more dramatic movement, tilt and scale
-      gsap.to(elem, {
-        x: moveX,
-        y: moveY,
-        rotationY: -deltaX * 0.06 * proximity, // Increased tilt effect
-        rotationX: deltaY * 0.06 * proximity, // Increased tilt effect
-        scale: 1 + 0.12 * proximity, // Increased scale effect
-        duration: 0.4, // Even faster response time for snappier feel
-        ease: "power1.out", // Changed ease to make it feel more immediate
-        overwrite: "auto",
+          // Animate the card to the new position
+          gsap.to(ref, {
+            x: moveX,
+            y: moveY,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        } else {
+          // Return to original position if outside attraction range
+          gsap.to(ref, {
+            x: 0,
+            y: 0,
+            duration: 0.7,
+            ease: "elastic.out(1, " + config.returnSpeed + ")",
+          });
+        }
       });
-    });
-  }, [mousePosition]);
+
+      // Continue animation loop
+      requestAnimationFrame(animateCards);
+    };
+
+    // Start the animation loop
+    const animationFrame = requestAnimationFrame(animateCards);
+    // Clean up animation frame on unmount
+    return () => cancelAnimationFrame(animationFrame);
+  }, [
+    mousePosition,
+    config.attractionDistance,
+    config.attractionStrength,
+    config.maxMovement,
+    config.returnSpeed,
+  ]);
 
   return (
     <section
