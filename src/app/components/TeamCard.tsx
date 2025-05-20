@@ -23,7 +23,7 @@ const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
     return (
       <div ref={ref} className="relative">
         <div
-          className="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-lg
+          className="relative w-full aspect-square overflow-hidden rounded-xl shadow-lg
                     bg-gradient-to-b from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-white/10"
         >
           {/* Glass effect card */}
