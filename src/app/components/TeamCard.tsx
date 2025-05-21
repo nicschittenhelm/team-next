@@ -24,7 +24,7 @@ const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
       <div ref={ref} className="relative group">
         <div
           className="relative w-full aspect-square overflow-hidden rounded-xl shadow-lg
-                    bg-gradient-to-b from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-white/10"
+                    "
         >
           {/* Glass effect card */}
           <div className="absolute inset-0.5 rounded-2xl overflow-hidden">
@@ -41,7 +41,7 @@ const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
                   objectFit: "cover",
                   objectPosition: "center top",
                 }}
-                className="brightness-75 grayscale transition-all duration-300 group-hover:grayscale-0"
+                className="brightness-75 grayscale transition-all duration-300 group-hover:grayscale-0 group-hover:brightness-100"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/90"></div>
             </div>

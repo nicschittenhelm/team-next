@@ -120,14 +120,14 @@ export default function Team() {
 
   return (
     <section
-      className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-900 to-black py-16"
+      className="relative h-screen w-full overflow-hidden bg-gradient-to-b from-gray-900 to-black"
       ref={containerRef}
     >
       {/* Two-column layout container */}
-      <div className="container mx-auto flex flex-col lg:flex-row">
+      <div className="container flex flex-col lg:flex-row">
         {/* Left side - Team grid */}
-        <div className="w-full lg:w-1/2 px-4 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="w-full h-screen flex justify-center items-center lg:w-1/2 px-4 relative z-10  perspective-distant">
+          <div className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6 rotate-y-[20deg]">
             {teamMembers.map((member) => (
               <GsapMagnetic key={member.id}>
                 <div

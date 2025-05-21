@@ -43,14 +43,14 @@ export default function GsapMagnetic({
       // Calculate movement based on distance (decreases as distance increases)
       // The closer the mouse is to the center, the more the element will move
       const moveX = distanceX * strength;
-      const moveY = distanceY * strength;      // Animate the element
+      const moveY = distanceY * strength;
+
+      // Animate the element
       gsap.to(element, {
         x: moveX,
         y: moveY,
         duration: ease,
-        ease: "power3.out",
-        rotation: moveX * 0.03, // Subtle rotation based on x movement
-        overwrite: true,
+        ease: "power2.out",
       });
 
       isAtOriginalPosition = false;
@@ -62,13 +62,11 @@ export default function GsapMagnetic({
         gsap.to(element, {
           x: 0,
           y: 0,
-          rotation: 0,
           duration: 0.7,
-          ease: "elastic.out(1.2, 0.4)", // More springy return animation
+          ease: "elastic.out(1.1, 0.4)",
           onComplete: () => {
             isAtOriginalPosition = true;
           },
-          overwrite: true,
         });
       }
     };
