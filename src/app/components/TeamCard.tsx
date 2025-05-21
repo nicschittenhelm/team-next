@@ -21,7 +21,7 @@ interface TeamCardProps {
 const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
   ({ member }, ref) => {
     return (
-      <div ref={ref} className="relative">
+      <div ref={ref} className="relative group">
         <div
           className="relative w-full aspect-square overflow-hidden rounded-xl shadow-lg
                     bg-gradient-to-b from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-white/10"
@@ -30,6 +30,7 @@ const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
           <div className="absolute inset-0.5 rounded-2xl overflow-hidden">
             {/* Card background with image */}
             <div className="relative w-full h-full">
+              {/* Black and white image (default) */}
               <Image
                 src={member.image}
                 alt={member.name}
@@ -40,13 +41,13 @@ const TeamCard = forwardRef<HTMLDivElement, TeamCardProps>(
                   objectFit: "cover",
                   objectPosition: "center top",
                 }}
-                className="brightness-75"
+                className="brightness-75 grayscale transition-all duration-300 group-hover:grayscale-0"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900/90"></div>
             </div>
 
-            {/* Name overlay */}
-            <div className="absolute bottom-6 left-0 right-0 px-5 text-center z-10">
+            {/* Name overlay - hidden by default, slides up on hover */}
+            <div className="absolute bottom-0 left-0 right-0 px-5 text-center z-10 transform translate-y-full opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100 pb-6">
               <h3 className="text-2xl font-bold text-white mb-1 drop-shadow-md">
                 {member.name}
               </h3>

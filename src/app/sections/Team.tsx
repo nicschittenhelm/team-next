@@ -123,18 +123,6 @@ export default function Team() {
       className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-900 to-black py-16"
       ref={containerRef}
     >
-      {/* Heading */}
-      <div className="container mx-auto text-center mb-10 z-10 relative">
-        <h2 className="text-5xl font-bold mb-3 text-white tracking-tight">
-          Our Team
-        </h2>
-        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-          Meet the talented developers and designers building the digital
-          solutions of tomorrow. A diverse team of experts crafting innovative
-          software with cutting-edge technologies.
-        </p>
-      </div>
-
       {/* Two-column layout container */}
       <div className="container mx-auto flex flex-col lg:flex-row">
         {/* Left side - Team grid */}
