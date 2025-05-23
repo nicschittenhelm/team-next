@@ -143,14 +143,14 @@ export default function Team() {
         </div>
 
         {/* Right side - Placeholder div and member details */}
-        <div className="w-full lg:w-1/2 px-4">
+        <div className="w-full lg:w-1/2 pt-40 px-4">
           <div className="flex flex-col gap-6">
             {/* Horizontal layout with image on left, details on right */}
             <div className="flex flex-col md:flex-row gap-6">
               {/* Left - Image placeholder (maintaining exact size) */}
               <div
                 ref={placeholderRef}
-                className="size-[250px] min-w-[250px] min-h-[250px] max-w-[250px] max-h-[250px] flex-shrink-0 border-8 border-dashed border-amber-400 bg-gray-900 relative overflow-hidden"
+                className="size-[250px] min-w-[250px] min-h-[250px] max-w-[250px] max-h-[250px] flex-shrink-0 border-8 border-dashed border-slate-700 bg-gray-900 relative overflow-hidden"
               >
                 {selectedMemberData && (
                   <Image
