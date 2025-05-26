@@ -59,11 +59,7 @@ export default function Vision() {
     // Create independent animations for each card
     cardRefs.current.forEach((card, idx, arr) => {
       if (!card) return;
-
-      // Calculate the position in the timeline for this card's animations
-      // This ensures each card starts its animation at the right scroll position
       const cardStart = idx * cardDuration;
-
       // Stage 1: Animate in (fold up to center position)
       timeline.fromTo(
         card,
@@ -75,6 +71,7 @@ export default function Vision() {
           rotateY: 10,
           scale: 1,
           transformOrigin: "center bottom",
+          filter: "brightness(1)",
         },
         {
           y: -80,
@@ -83,64 +80,37 @@ export default function Vision() {
           rotateX: 0,
           rotateY: 0,
           scale: 1,
+          filter: "brightness(1)",
           ease: "power2.out",
           duration: cardDuration,
         },
-        cardStart // Absolute position in timeline
+        cardStart
       );
-
-      // Stage 2: Animate out (move back)
-      // By using a separate fromTo, we ensure all properties are explicitly defined
-      if (idx < arr.length - 1) {
-        timeline.fromTo(
-          card,
-          {
-            // Explicitly set all starting values to match end of first animation
-            y: -80,
-            z: -80,
-            x: 30,
-            rotateX: 0,
-            rotateY: 0,
-            scale: 1,
-          },
-          {
-            y: -110, // Keep these the same to avoid jumps
-            z: -80,
-            x: 50,
-            rotateX: 0,
-            rotateY: 0,
-            scale: 1, // Only scale changes
-            ease: "power1.inOut",
-            duration: cardDuration,
-          },
-          cardStart + cardDuration // Position right after the first animation
-        );
-      } else {
-        // Last card
-        timeline.fromTo(
-          card,
-          {
-            // Explicitly set all starting values to match end of first animation
-            y: -80,
-            z: -80,
-            x: 30,
-            rotateX: 0,
-            rotateY: 0,
-            scale: 1,
-          },
-          {
-            y: -110,
-            z: -80,
-            x: 50,
-            rotateX: 0,
-            rotateY: 0,
-            scale: 1,
-            ease: "power1.inOut",
-            duration: cardDuration,
-          },
-          cardStart + cardDuration
-        );
-      }
+      // Stage 2: Animate out (move back) and darken
+      timeline.fromTo(
+        card,
+        {
+          y: -80,
+          z: -80,
+          x: 30,
+          rotateX: 0,
+          rotateY: 0,
+          scale: 1,
+          filter: "brightness(1)",
+        },
+        {
+          y: -120,
+          z: -80,
+          x: 80,
+          rotateX: 0,
+          rotateY: 0,
+          scale: 1,
+          filter: "brightness(0.7)",
+          ease: "linear",
+          duration: cardDuration * 2,
+        },
+        cardStart + cardDuration
+      );
     });
 
     return () => {
