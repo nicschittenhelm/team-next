@@ -26,10 +26,6 @@ export default function Vision() {
     if (!sectionRef.current || !cardContainerRef.current) return;
     if (cardRefs.current.length === 0) return;
 
-    gsap.set(cardContainerRef.current, {
-      perspective: 1200,
-      perspectiveOrigin: "center center",
-    });
     // Set initial state for all cards
     cardRefs.current.forEach((card) => {
       if (card) {
@@ -38,7 +34,7 @@ export default function Vision() {
           z: 100,
           rotateX: -40,
           rotateY: 10,
-          transformOrigin: "center bottom",
+          transformOrigin: "center center",
         });
       }
     });
@@ -47,7 +43,7 @@ export default function Vision() {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
-        end: "bottom center",
+        end: "center center",
         scrub: 0.8,
         pin: true,
         anticipatePin: 1,
@@ -64,21 +60,23 @@ export default function Vision() {
       timeline.fromTo(
         card,
         {
-          y: 700,
-          z: 100,
+          y: 1000,
+          z: 10,
           x: 0,
-          rotateX: -40,
-          rotateY: 10,
+          rotateX: -10,
+          rotateY: 5,
+          rotateZ: -5,
           scale: 1,
-          transformOrigin: "center bottom",
+          transformOrigin: "center center",
           filter: "brightness(1)",
         },
         {
-          y: -80,
-          z: -80,
+          y: 0,
+          z: 0,
           x: 30,
           rotateX: 0,
           rotateY: 0,
+          rotateZ: 0,
           scale: 1,
           filter: "brightness(1)",
           ease: "power2.out",
@@ -90,8 +88,8 @@ export default function Vision() {
       timeline.fromTo(
         card,
         {
-          y: -80,
-          z: -80,
+          y: 0,
+          z: 0,
           x: 30,
           rotateX: 0,
           rotateY: 0,
@@ -101,11 +99,11 @@ export default function Vision() {
         {
           y: -120,
           z: -80,
-          x: 80,
+          x: 0,
           rotateX: 0,
           rotateY: 0,
-          scale: 1,
-          filter: "brightness(0.7)",
+          scale: 0.9,
+          filter: "brightness(0.5)",
           ease: "linear",
           duration: cardDuration * 2,
         },
@@ -122,30 +120,39 @@ export default function Vision() {
   return (
     <section
       ref={sectionRef}
-      className="h-[200vh] w-screen bg-slate-500 relative overflow-hidden"
+      className="h-[200vh] w-screen bg-black relative overflow-hidden"
     >
-      <div className="sticky top-0 h-screen w-screen flex items-center justify-center">
-        <h2 className="text-4xl font-bold text-white absolute top-20 left-1/2 transform -translate-x-1/2 z-10">
-          Our Vision
-        </h2>
+      <div className="sticky top-0 h-screen w-screen flex items-center justify-end">
         <div
           ref={cardContainerRef}
           className="card-container relative h-full w-full flex items-center justify-center"
-          style={{
-            perspective: "1200px",
-            transformStyle: "preserve-3d",
-            perspectiveOrigin: "center center",
-          }}
+          style={
+            {
+              // Remove perspective from the container
+              // perspective: "1200px",
+              // transformStyle: "preserve-3d",
+              // perspectiveOrigin: "center center",
+            }
+          }
         >
           {cards.map((card, idx) => (
             <div
               key={idx}
-              ref={(el) => {
-                cardRefs.current[idx] = el;
+              style={{
+                perspective: "1200px",
+                perspectiveOrigin: "center center",
+                transformStyle: "preserve-3d",
               }}
               className="absolute"
             >
-              <VisionCard title={card.title} description={card.description} />
+              <div
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                className="w-full h-full"
+              >
+                <VisionCard title={card.title} description={card.description} />
+              </div>
             </div>
           ))}
         </div>

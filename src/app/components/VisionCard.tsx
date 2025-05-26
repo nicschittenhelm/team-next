@@ -9,7 +9,7 @@ interface VisionCardProps {
 
 const VisionCard: React.FC<VisionCardProps> = ({ title, description }) => {
   return (
-    <div className="w-[1200px] h-[600px] bg-gray-800 rounded-2xl p-20">
+    <div className="w-[80vw] h-[70vh] rounded-2xl p-20 bg-gray-500 border-2 border-white/10">
       <h3 className="text-2xl font-bold text-white">{title}</h3>
 
       <p className="text-gray-300">{description}</p>
