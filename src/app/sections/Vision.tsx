@@ -4,6 +4,7 @@ import VisionCard from "../components/VisionCard";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { visionCards } from "../data/visionCards";
 
 // Register ScrollTrigger plugin with GSAP
 if (typeof window !== "undefined") {
@@ -13,75 +14,140 @@ if (typeof window !== "undefined") {
 export default function Vision() {
   const sectionRef = useRef<HTMLElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  // Use a ref to hold an array of card refs
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  // Card data
-  const cardData = {
-    title: "Frontend Architecture & Automation",
-    description:
-      "We aim to be the leading provider of innovative solutions that empower individuals and organizations to achieve their goals.",
-  };
+  // Card data array for scalability
+  const cards = visionCards;
 
   useEffect(() => {
-    // Skip animation setup during SSR
     if (typeof window === "undefined") return;
-
-    // Clear any existing ScrollTrigger instances to prevent duplicates on hot reloads
     ScrollTrigger.getAll().forEach((trigger) => trigger.kill(true));
+    if (!sectionRef.current || !cardContainerRef.current) return;
+    if (cardRefs.current.length === 0) return;
 
-    if (!cardRef.current || !sectionRef.current || !cardContainerRef.current)
-      return; // Apply perspective to the container for 3D transformations
     gsap.set(cardContainerRef.current, {
-      perspective: 1200, // Increased perspective for more dramatic effect
+      perspective: 1200,
       perspectiveOrigin: "center center",
-    }); // Setup initial state - card starts completely off-screen with negative rotation (folded down)
-    gsap.set(cardRef.current, {
-      y: 700, // Start much further below the viewport (completely out of view)
-      z: 100, // Start further back in Z space
-      rotateX: -40, // Negative rotation (folded down/away from viewer)
-      rotateY: 10, // No rotation on Y axis
-      // No rotation on Y axis
-      transformOrigin: "center bottom", // Origin at bottom right corner for proper folding effect
+    });
+    // Set initial state for all cards
+    cardRefs.current.forEach((card) => {
+      if (card) {
+        gsap.set(card, {
+          y: 700,
+          z: 100,
+          rotateX: -40,
+          rotateY: 10,
+          transformOrigin: "center bottom",
+        });
+      }
     });
 
-    // Create the main timeline for the section
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
         end: "bottom center",
-        scrub: 0.8, // Smooth scrubbing effect
-        pin: true, // Pin the section while scrolling
+        scrub: 0.8,
+        pin: true,
         anticipatePin: 1,
-        markers: false, // Helpful for debugging the scroll points
+        markers: false,
       },
-    });
+    }); // Set up animation parameters
+    const cardDuration = 0.3; // Duration for each card animation
 
-    // Stage 1: Card unfolds and flies in from bottom to center
-    timeline.to(cardRef.current, {
-      y: 0, // Center vertically
-      z: 50, // Slightly in front for emphasis
-      rotateX: 0, // Flat/no rotation (fully unfolded)
-      rotateY: 0, // No rotation on Y axis
-      ease: "power2.out",
-      duration: 0.6, // First 60% of the scroll animation
-    });
+    // Create independent animations for each card
+    cardRefs.current.forEach((card, idx, arr) => {
+      if (!card) return;
 
-    // Stage 2: Card moves slightly back to final position (but stays visible)
-    timeline.to(cardRef.current, {
-      z: -80, // Move slightly back in Z space, but stay visible
-      y: -80, // Slight upward movement
-      x: 30, // Center horizontally
-      ease: "power1.inOut",
-      duration: 0.3, // Final 30% of the scroll animation
+      // Calculate the position in the timeline for this card's animations
+      // This ensures each card starts its animation at the right scroll position
+      const cardStart = idx * cardDuration;
+
+      // Stage 1: Animate in (fold up to center position)
+      timeline.fromTo(
+        card,
+        {
+          y: 700,
+          z: 100,
+          x: 0,
+          rotateX: -40,
+          rotateY: 10,
+          scale: 1,
+          transformOrigin: "center bottom",
+        },
+        {
+          y: -80,
+          z: -80,
+          x: 30,
+          rotateX: 0,
+          rotateY: 0,
+          scale: 1,
+          ease: "power2.out",
+          duration: cardDuration,
+        },
+        cardStart // Absolute position in timeline
+      );
+
+      // Stage 2: Animate out (move back)
+      // By using a separate fromTo, we ensure all properties are explicitly defined
+      if (idx < arr.length - 1) {
+        timeline.fromTo(
+          card,
+          {
+            // Explicitly set all starting values to match end of first animation
+            y: -80,
+            z: -80,
+            x: 30,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 1,
+          },
+          {
+            y: -110, // Keep these the same to avoid jumps
+            z: -80,
+            x: 50,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 1, // Only scale changes
+            ease: "power1.inOut",
+            duration: cardDuration,
+          },
+          cardStart + cardDuration // Position right after the first animation
+        );
+      } else {
+        // Last card
+        timeline.fromTo(
+          card,
+          {
+            // Explicitly set all starting values to match end of first animation
+            y: -80,
+            z: -80,
+            x: 30,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 1,
+          },
+          {
+            y: -110,
+            z: -80,
+            x: 50,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 1,
+            ease: "power1.inOut",
+            duration: cardDuration,
+          },
+          cardStart + cardDuration
+        );
+      }
     });
 
     return () => {
-      // Clean up ScrollTrigger when component unmounts
       timeline.kill();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, []);
+  }, [cards.length]);
 
   return (
     <section
@@ -91,7 +157,7 @@ export default function Vision() {
       <div className="sticky top-0 h-screen w-screen flex items-center justify-center">
         <h2 className="text-4xl font-bold text-white absolute top-20 left-1/2 transform -translate-x-1/2 z-10">
           Our Vision
-        </h2>{" "}
+        </h2>
         <div
           ref={cardContainerRef}
           className="card-container relative h-full w-full flex items-center justify-center"
@@ -101,12 +167,17 @@ export default function Vision() {
             perspectiveOrigin: "center center",
           }}
         >
-          <div ref={cardRef} className="absolute">
-            <VisionCard
-              title={cardData.title}
-              description={cardData.description}
-            />
-          </div>
+          {cards.map((card, idx) => (
+            <div
+              key={idx}
+              ref={(el) => {
+                cardRefs.current[idx] = el;
+              }}
+              className="absolute"
+            >
+              <VisionCard title={card.title} description={card.description} />
+            </div>
+          ))}
         </div>
       </div>
     </section>
