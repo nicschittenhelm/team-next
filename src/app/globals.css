@@ -28,6 +28,10 @@ html {
 body {
   overflow-x: hidden;
   min-height: 100vh;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

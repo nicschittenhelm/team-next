@@ -1,15 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useRef, forwardRef } from "react";
+import gsap from "gsap";
 
 interface VisionCardProps {
   title: string;
   description: string;
+  progress?: number; // Add progress prop
 }
 
-const VisionCard: React.FC<VisionCardProps> = ({ title, description }) => {
+const VisionCard = forwardRef(function VisionCard(
+  { title, description, progress = 0 }: VisionCardProps,
+  ref
+) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+
+  // Animate text in/out based on progress (scroll-synchronized)
+  React.useEffect(() => {
+    if (titleRef.current && descRef.current) {
+      // Interpolate y based on progress (0 = out, 1 = in)
+      const y = 300 * (1 - progress); // y: 64px when progress=0, y: 0 when progress=1
+      gsap.to([titleRef.current, descRef.current], {
+        y,
+        duration: 0,
+        overwrite: true,
+        immediateRender: false,
+      });
+    }
+  }, [progress]);
+
   return (
-    <div className="w-[80vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/30 relative overflow-hidden">
+    <div className="w-[80vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/100 relative overflow-hidden">
       {/* Grid overlay */}
       <div
         aria-hidden="true"
@@ -22,12 +45,16 @@ const VisionCard: React.FC<VisionCardProps> = ({ title, description }) => {
           zIndex: 0,
         }}
       />
-      <div className="relative z-10">
-        <h3 className="text-2xl font-bold text-white">{title}</h3>
-        <p className="text-gray-300">{description}</p>
+      <div ref={contentRef} className="relative z-10">
+        <h3 ref={titleRef} className="text-2xl font-bold text-white mb-4">
+          {title}
+        </h3>
+        <p ref={descRef} className="text-gray-300">
+          {description}
+        </p>
       </div>
     </div>
   );
-};
+});
 
 export default VisionCard;

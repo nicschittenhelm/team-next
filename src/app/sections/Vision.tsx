@@ -1,7 +1,7 @@
 "use client";
 
 import VisionCard from "../components/VisionCard";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { visionCards } from "../data/visionCards";
@@ -16,9 +16,19 @@ export default function Vision() {
   const cardContainerRef = useRef<HTMLDivElement>(null);
   // Use a ref to hold an array of card refs
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  // Use a ref to hold an array of VisionCard handles
+  interface VisionCardHandle {
+    triggerTextIn?: () => void;
+    resetText?: () => void;
+  }
+  const cardComponentRefs = useRef<Array<VisionCardHandle | null>>([]);
 
   // Card data array for scalability
   const cards = visionCards;
+
+  const [cardProgress, setCardProgress] = useState<number[]>(() =>
+    Array(cards.length).fill(0)
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -48,6 +58,7 @@ export default function Vision() {
         end: "+=1200", // Animation duration
         scrub: 0.8,
         markers: false,
+        // onUpdate: (self) => { ... } // We'll handle per-card below
       },
     });
 
@@ -91,6 +102,31 @@ export default function Vision() {
           filter: "brightness(1)",
           ease: "power2.out",
           duration: cardDuration,
+          onStart: () => {
+            cardComponentRefs.current[idx]?.triggerTextIn?.();
+          },
+          onReverseComplete: () => {
+            cardComponentRefs.current[idx]?.resetText?.();
+          },
+          // Add onUpdate to update progress for this card
+          onUpdate: function () {
+            // Get the total progress of the timeline
+            const tl = this.timeline || timeline;
+            // Calculate the progress for this card's in-animation
+            const absStart = cardStart;
+            const absEnd = cardStart + cardDuration;
+            const t = tl.time();
+            let progress = 0;
+            if (t <= absStart) progress = 0;
+            else if (t >= absEnd) progress = 1;
+            else progress = (t - absStart) / (absEnd - absStart);
+            setCardProgress((prev) => {
+              if (prev[idx] === progress) return prev;
+              const next = [...prev];
+              next[idx] = progress;
+              return next;
+            });
+          },
         },
         cardStart
       );
@@ -190,7 +226,14 @@ export default function Vision() {
                 }}
                 className="w-full h-full"
               >
-                <VisionCard title={card.title} description={card.description} />
+                <VisionCard
+                  ref={(el) => {
+                    cardComponentRefs.current[idx] = el;
+                  }}
+                  title={card.title}
+                  description={card.description}
+                  progress={cardProgress[idx]}
+                />
               </div>
             </div>
           ))}
