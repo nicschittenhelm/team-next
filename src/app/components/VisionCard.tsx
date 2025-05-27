@@ -11,13 +11,21 @@ interface VisionCardProps {
   approach?: string[]; // Add approach prop
 }
 
+const gradients = [
+  "from-blue-950 to-indigo-700",
+  "from-green-950 to-emerald-700",
+  "from-purple-900 to-pink-800", // keep purple as is
+  "from-yellow-950 to-orange-800",
+];
+
 const VisionCard = ({
   title,
   description,
   goal,
   approach,
   progress = 0,
-}: VisionCardProps) => {
+  cardIndex = 0,
+}: VisionCardProps & { cardIndex?: number }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
@@ -45,7 +53,11 @@ const VisionCard = ({
   }, [progress]);
 
   return (
-    <div className="w-[70vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/50 relative overflow-hidden">
+    <div
+      className={`w-[70vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br ${
+        gradients[cardIndex % gradients.length]
+      } border-2 border-white/50 relative overflow-hidden`}
+    >
       {/* Grid overlay */}
       <div
         aria-hidden="true"

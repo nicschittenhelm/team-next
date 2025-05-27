@@ -223,6 +223,7 @@ export default function Vision() {
                   goal={card.goal}
                   approach={card.approach}
                   progress={cardProgress[idx]}
+                  cardIndex={idx}
                 />
               </div>
             </div>
