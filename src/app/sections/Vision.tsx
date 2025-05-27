@@ -29,8 +29,9 @@ export default function Vision() {
     // Set initial state for all cards
     cardRefs.current.forEach((card) => {
       if (card) {
+        // Use window.innerHeight to always place cards below the viewport
         gsap.set(card, {
-          y: 700,
+          y: window.innerHeight + 100, // 100px extra to ensure it's out of view
           z: 100,
           rotateX: -40,
           rotateY: 10,
@@ -39,16 +40,25 @@ export default function Vision() {
       }
     });
 
+    // Animation timeline: starts when top of section hits center of viewport
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
-        start: "top top",
-        end: "center center",
+        start: "top 20%", // Animation starts when top of section hits center of viewport
+        end: "+=1200", // Animation duration
         scrub: 0.8,
-        pin: true,
-        anticipatePin: 1,
         markers: false,
       },
+    });
+
+    // Pinning: only pins when the top of the section hits the top of the viewport
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top top", // Pin starts when top of section hits top of viewport
+      end: "+=1200", // Pin duration matches animation duration
+      pin: true,
+      anticipatePin: 1,
+      markers: false,
     }); // Set up animation parameters
     const cardDuration = 0.3; // Duration for each card animation
 
@@ -60,7 +70,7 @@ export default function Vision() {
       timeline.fromTo(
         card,
         {
-          y: 1000,
+          y: window.innerHeight, // Always start out of viewport
           z: 10,
           x: 0,
           rotateX: -10,
@@ -120,7 +130,7 @@ export default function Vision() {
   return (
     <section
       ref={sectionRef}
-      className="h-[200vh] w-screen bg-black relative overflow-hidden"
+      className="h-[1200px] w-screen bg-blue-800 relative overflow-hidden"
     >
       <div className="sticky top-0 h-screen w-screen flex items-center justify-end">
         <div
