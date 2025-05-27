@@ -32,16 +32,19 @@ const VisionCard = forwardRef(function VisionCard(
   }, [progress]);
 
   return (
-    <div className="w-[80vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/100 relative overflow-hidden">
+    <div className="w-[80vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/50 relative overflow-hidden">
       {/* Grid overlay */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            `linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),` +
-            `linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: "20px 20px",
+            `linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px),` +
+            `linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)`,
+          backgroundSize: `${20 + 15 * (1 - progress)}px ${
+            20 + 15 * (1 - progress)
+          }px`, // grid spacing from 20px (progress=0) to 10px (progress=1)
+          backgroundPosition: "center", // center the grid
           zIndex: 0,
         }}
       />

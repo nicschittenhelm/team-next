@@ -12,20 +12,23 @@ if (typeof window !== "undefined") {
 }
 
 export default function Vision() {
+  // Configurable animation constants
+  const PERSPECTIVE = "1200px";
+  const CARD_ANIMATION_DURATION = 0.3;
+  const SECTION_ANIMATION_DISTANCE = 1200;
+  const CARD_BLUR = 8;
+  const CARD_BLUR_END = `blur(${CARD_BLUR}px)`;
+  const CARD_BLUR_NONE = "blur(0px)";
+
   const sectionRef = useRef<HTMLElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
-  // Use a ref to hold an array of card refs
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
-  // Use a ref to hold an array of VisionCard handles
   interface VisionCardHandle {
     triggerTextIn?: () => void;
     resetText?: () => void;
   }
   const cardComponentRefs = useRef<Array<VisionCardHandle | null>>([]);
-
-  // Card data array for scalability
   const cards = visionCards;
-
   const [cardProgress, setCardProgress] = useState<number[]>(() =>
     Array(cards.length).fill(0)
   );
@@ -33,8 +36,12 @@ export default function Vision() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     ScrollTrigger.getAll().forEach((trigger) => trigger.kill(true));
-    if (!sectionRef.current || !cardContainerRef.current) return;
-    if (cardRefs.current.length === 0) return;
+    if (
+      !sectionRef.current ||
+      !cardContainerRef.current ||
+      cardRefs.current.length === 0
+    )
+      return;
 
     // Set initial state for all cards
     cardRefs.current.forEach((card) => {
@@ -50,34 +57,32 @@ export default function Vision() {
       }
     });
 
-    // Animation timeline: starts when top of section hits center of viewport
+    // Timeline for card animations
     const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
-        start: "top 20%", // Animation starts when top of section hits center of viewport
-        end: "+=1200", // Animation duration
+        start: "top 30%", // Animation starts when top of section hits center of viewport
+        end: `+=${SECTION_ANIMATION_DISTANCE}`, // Animation duration
         scrub: 0.8,
         markers: false,
-        // onUpdate: (self) => { ... } // We'll handle per-card below
       },
     });
 
-    // Pinning: only pins when the top of the section hits the top of the viewport
+    // Pin section during animation
     ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top", // Pin starts when top of section hits top of viewport
-      end: "+=1200", // Pin duration matches animation duration
+      end: `+=${SECTION_ANIMATION_DISTANCE}`, // Pin duration matches animation duration
       pin: true,
       anticipatePin: 1,
       markers: false,
-    }); // Set up animation parameters
-    const cardDuration = 0.3; // Duration for each card animation
+    });
 
-    // Create independent animations for each card
+    // Animate each card
     cardRefs.current.forEach((card, idx) => {
       if (!card) return;
-      const cardStart = idx * cardDuration;
-      // Stage 1: Animate in (fold up to center position)
+      const cardStart = idx * CARD_ANIMATION_DURATION;
+      // Animate in
       timeline.fromTo(
         card,
         {
@@ -89,7 +94,7 @@ export default function Vision() {
           rotateZ: -5,
           scale: 1,
           transformOrigin: "center center",
-          filter: "brightness(1)",
+          filter: `brightness(1) ${CARD_BLUR_END}`, // Blur at start
         },
         {
           y: 0,
@@ -99,22 +104,16 @@ export default function Vision() {
           rotateY: 0,
           rotateZ: 0,
           scale: 1,
-          filter: "brightness(1)",
+          filter: `brightness(1) ${CARD_BLUR_NONE}`, // No blur at center
           ease: "power2.out",
-          duration: cardDuration,
-          onStart: () => {
-            cardComponentRefs.current[idx]?.triggerTextIn?.();
-          },
-          onReverseComplete: () => {
-            cardComponentRefs.current[idx]?.resetText?.();
-          },
-          // Add onUpdate to update progress for this card
+          duration: CARD_ANIMATION_DURATION,
+          onStart: () => cardComponentRefs.current[idx]?.triggerTextIn?.(),
+          onReverseComplete: () =>
+            cardComponentRefs.current[idx]?.resetText?.(),
           onUpdate: function () {
-            // Get the total progress of the timeline
             const tl = this.timeline || timeline;
-            // Calculate the progress for this card's in-animation
             const absStart = cardStart;
-            const absEnd = cardStart + cardDuration;
+            const absEnd = cardStart + CARD_ANIMATION_DURATION;
             const t = tl.time();
             let progress = 0;
             if (t <= absStart) progress = 0;
@@ -130,9 +129,8 @@ export default function Vision() {
         },
         cardStart
       );
-      // Stage 2: Animate out (move back) and darken
+      // Animate out
       if (idx < cardRefs.current.length - 2) {
-        // All but the last two cards animate out fully
         timeline.fromTo(
           card,
           {
@@ -142,7 +140,7 @@ export default function Vision() {
             rotateX: 0,
             rotateY: 0,
             scale: 1,
-            filter: "brightness(1)",
+            filter: `brightness(1) ${CARD_BLUR_NONE}`, // No blur at center
           },
           {
             y: -120,
@@ -151,14 +149,14 @@ export default function Vision() {
             rotateX: 0,
             rotateY: 0,
             scale: 0.9,
-            filter: "brightness(0.5)",
+            filter: `brightness(0.5) ${CARD_BLUR_END}`, // Blur at end
             ease: "linear",
-            duration: cardDuration * 2,
+            duration: CARD_ANIMATION_DURATION * 2,
+            immediateRender: false, // Prevents initial state bug
           },
-          cardStart + cardDuration
+          cardStart + CARD_ANIMATION_DURATION
         );
       } else if (idx === cardRefs.current.length - 2) {
-        // The second-to-last card only animates out halfway and then freezes
         timeline.fromTo(
           card,
           {
@@ -168,7 +166,7 @@ export default function Vision() {
             rotateX: 0,
             rotateY: 0,
             scale: 1,
-            filter: "brightness(1)",
+            filter: `brightness(1) ${CARD_BLUR_NONE}`, // No blur at center
           },
           {
             y: -60, // Only halfway out
@@ -177,12 +175,12 @@ export default function Vision() {
             rotateX: 0,
             rotateY: 0,
             scale: 0.95,
-            filter: "brightness(0.75)",
+            filter: `brightness(0.75) ${CARD_BLUR_END}`, // Blur at end
             ease: "linear",
-            duration: cardDuration, // Only half the duration
+            duration: CARD_ANIMATION_DURATION, // Only half the duration
             immediateRender: false, // Prevents initial state bug
           },
-          cardStart + cardDuration
+          cardStart + CARD_ANIMATION_DURATION
         );
       }
     });
@@ -196,26 +194,18 @@ export default function Vision() {
   return (
     <section
       ref={sectionRef}
-      className="h-[1200px] w-screen bg-blue-800 relative overflow-hidden"
+      className="h-screen w-screen bg-black relative overflow-hidden"
     >
       <div className="sticky top-0 h-screen w-screen flex items-center justify-end">
         <div
           ref={cardContainerRef}
           className="card-container relative h-full w-full flex items-center justify-center"
-          style={
-            {
-              // Remove perspective from the container
-              // perspective: "1200px",
-              // transformStyle: "preserve-3d",
-              // perspectiveOrigin: "center center",
-            }
-          }
         >
           {cards.map((card, idx) => (
             <div
               key={idx}
               style={{
-                perspective: "1200px",
+                perspective: PERSPECTIVE,
                 perspectiveOrigin: "center center",
                 transformStyle: "preserve-3d",
               }}
