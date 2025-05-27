@@ -218,11 +218,10 @@ export default function Vision() {
                 className="w-full h-full"
               >
                 <VisionCard
-                  ref={(el) => {
-                    cardComponentRefs.current[idx] = el;
-                  }}
                   title={card.title}
                   description={card.description}
+                  goal={card.goal}
+                  approach={card.approach}
                   progress={cardProgress[idx]}
                 />
               </div>

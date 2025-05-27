@@ -1,38 +1,51 @@
 "use client";
 
-import React, { useRef, forwardRef } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
 
 interface VisionCardProps {
   title: string;
   description: string;
   progress?: number; // Add progress prop
+  goal?: string; // Add goal prop
+  approach?: string[]; // Add approach prop
 }
 
-const VisionCard = forwardRef(function VisionCard(
-  { title, description, progress = 0 }: VisionCardProps,
-  ref
-) {
+const VisionCard = ({
+  title,
+  description,
+  goal,
+  approach,
+  progress = 0,
+}: VisionCardProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
+  const approachRef = useRef<HTMLDivElement>(null);
 
   // Animate text in/out based on progress (scroll-synchronized)
   React.useEffect(() => {
-    if (titleRef.current && descRef.current) {
-      // Interpolate y based on progress (0 = out, 1 = in)
-      const y = 300 * (1 - progress); // y: 64px when progress=0, y: 0 when progress=1
-      gsap.to([titleRef.current, descRef.current], {
-        y,
-        duration: 0,
-        overwrite: true,
-        immediateRender: false,
-      });
+    if (titleRef.current && descRef.current && contentRef.current) {
+      const y = 200 * (1 - progress);
+      gsap.to(
+        [
+          titleRef.current,
+          descRef.current,
+          contentRef.current.querySelector(".goal-text"),
+          approachRef.current,
+        ],
+        {
+          y,
+          duration: 0,
+          overwrite: true,
+          immediateRender: false,
+        }
+      );
     }
   }, [progress]);
 
   return (
-    <div className="w-[80vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/50 relative overflow-hidden">
+    <div className="w-[70vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br from-black to-gray-800 border-2 border-white/50 relative overflow-hidden">
       {/* Grid overlay */}
       <div
         aria-hidden="true"
@@ -43,21 +56,43 @@ const VisionCard = forwardRef(function VisionCard(
             `linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)`,
           backgroundSize: `${20 + 15 * (1 - progress)}px ${
             20 + 15 * (1 - progress)
-          }px`, // grid spacing from 20px (progress=0) to 10px (progress=1)
-          backgroundPosition: "center", // center the grid
+          }px`,
+          backgroundPosition: "center",
           zIndex: 0,
         }}
       />
-      <div ref={contentRef} className="relative z-10">
-        <h3 ref={titleRef} className="text-2xl font-bold text-white mb-4">
-          {title}
-        </h3>
-        <p ref={descRef} className="text-gray-300">
-          {description}
-        </p>
+      <div
+        ref={contentRef}
+        className="relative z-10 flex flex-col h-full justify-between"
+      >
+        <div>
+          {goal && (
+            <div className="mb-2 text-lg font-bold goal-text">{goal}</div>
+          )}
+          <h3
+            ref={titleRef}
+            className="text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight drop-shadow-lg"
+          >
+            {title}
+          </h3>
+          <p
+            ref={descRef}
+            className="text-lg text-white/90 mb-8 font-medium leading-relaxed max-w-3xl"
+          >
+            {description}
+          </p>
+        </div>
+        {Array.isArray(approach) && approach.length > 0 && (
+          <div
+            ref={approachRef}
+            className="mt-4 text-base text-white/70 font-mono tracking-wide"
+          >
+            {approach.join(" // ")}
+          </div>
+        )}
       </div>
     </div>
   );
-});
+};
 
 export default VisionCard;
