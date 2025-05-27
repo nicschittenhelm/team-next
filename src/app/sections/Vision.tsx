@@ -180,6 +180,7 @@ export default function Vision() {
             filter: "brightness(0.75)",
             ease: "linear",
             duration: cardDuration, // Only half the duration
+            immediateRender: false, // Prevents initial state bug
           },
           cardStart + cardDuration
         );
