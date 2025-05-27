@@ -63,7 +63,7 @@ export default function Vision() {
     const cardDuration = 0.3; // Duration for each card animation
 
     // Create independent animations for each card
-    cardRefs.current.forEach((card, idx, arr) => {
+    cardRefs.current.forEach((card, idx) => {
       if (!card) return;
       const cardStart = idx * cardDuration;
       // Stage 1: Animate in (fold up to center position)
@@ -95,30 +95,59 @@ export default function Vision() {
         cardStart
       );
       // Stage 2: Animate out (move back) and darken
-      timeline.fromTo(
-        card,
-        {
-          y: 0,
-          z: 0,
-          x: 30,
-          rotateX: 0,
-          rotateY: 0,
-          scale: 1,
-          filter: "brightness(1)",
-        },
-        {
-          y: -120,
-          z: -80,
-          x: 0,
-          rotateX: 0,
-          rotateY: 0,
-          scale: 0.9,
-          filter: "brightness(0.5)",
-          ease: "linear",
-          duration: cardDuration * 2,
-        },
-        cardStart + cardDuration
-      );
+      if (idx < cardRefs.current.length - 2) {
+        // All but the last two cards animate out fully
+        timeline.fromTo(
+          card,
+          {
+            y: 0,
+            z: 0,
+            x: 30,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 1,
+            filter: "brightness(1)",
+          },
+          {
+            y: -120,
+            z: -80,
+            x: 0,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 0.9,
+            filter: "brightness(0.5)",
+            ease: "linear",
+            duration: cardDuration * 2,
+          },
+          cardStart + cardDuration
+        );
+      } else if (idx === cardRefs.current.length - 2) {
+        // The second-to-last card only animates out halfway and then freezes
+        timeline.fromTo(
+          card,
+          {
+            y: 0,
+            z: 0,
+            x: 30,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 1,
+            filter: "brightness(1)",
+          },
+          {
+            y: -60, // Only halfway out
+            z: -40,
+            x: 15,
+            rotateX: 0,
+            rotateY: 0,
+            scale: 0.95,
+            filter: "brightness(0.75)",
+            ease: "linear",
+            duration: cardDuration, // Only half the duration
+          },
+          cardStart + cardDuration
+        );
+      }
     });
 
     return () => {
