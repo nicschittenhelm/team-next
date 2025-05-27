@@ -4,7 +4,7 @@ import VisionCard from "../components/VisionCard";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { visionCards } from "../data/visionCards";
+import { visionData } from "../data/visionData";
 
 // Register ScrollTrigger plugin with GSAP
 if (typeof window !== "undefined") {
@@ -28,7 +28,7 @@ export default function Vision() {
     resetText?: () => void;
   }
   const cardComponentRefs = useRef<Array<VisionCardHandle | null>>([]);
-  const cards = visionCards;
+  const cards = visionData;
   const [cardProgress, setCardProgress] = useState<number[]>(() =>
     Array(cards.length).fill(0)
   );
