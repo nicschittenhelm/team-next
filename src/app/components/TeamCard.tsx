@@ -12,6 +12,7 @@ export type TeamMember = {
   description: string;
   technologies: string[];
   image: string;
+  color: [number, number, number]; // RGB color for shader
 };
 
 interface TeamCardProps {

@@ -115,8 +115,7 @@ export default function Team() {
       ref={containerRef}
     >
       {/* GLSL shader background */}
-
-      <ShaderBackground />
+      <ShaderBackground color={selectedMemberData?.color} />
       {/* Two-column layout container */}
       <div className="flex flex-col lg:flex-row w-full h-full max-w-[80vw] mx-aut">
         {/* Left side - Team grid */}
