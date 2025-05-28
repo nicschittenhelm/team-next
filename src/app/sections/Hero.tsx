@@ -186,7 +186,7 @@ export default function Hero() {
           rotationZ={50}
           color1="#F25042"
           color2="#A8C4BC"
-          color3="#007D7E"
+          color3="#000000" //#007D7E
           reflection={0.1}
           // View (camera) props
           cAzimuthAngle={180}
@@ -195,9 +195,9 @@ export default function Hero() {
           cameraZoom={1}
           // Effect props
           lightType="3d"
-          brightness={1.3}
+          brightness={1.2}
           envPreset="city"
-          grain="on"
+          grain="off"
           // Tool props
           toggleAxis={false} // axesHelper=off
           zoomOut={false} // based on zoomOut not explicitly set
@@ -209,11 +209,11 @@ export default function Hero() {
 
       {/* Animated text content */}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="flex flex-col items-center text-black">
+        <div className="flex flex-col items-center  mix-blend-difference">
           <div className="flex items-baseline">
             <h1
               ref={nextRef}
-              className="text-8xl md:text-[12rem] font-black tracking-tight"
+              className="text-8xl md:text-[12rem] mix-blend-difference text-black font-black tracking-tight"
             >
               NEXT
             </h1>
