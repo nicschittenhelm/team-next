@@ -18,7 +18,7 @@ export const teamMembers: TeamMember[] = [
       "Startup Experience",
       "Team Leadership",
     ],
-    image: "/thi.jpg",
+    image: "/team/thi.jpg",
   },
 
   {
@@ -36,7 +36,7 @@ export const teamMembers: TeamMember[] = [
       "System Design",
       "Microservices",
     ],
-    image: "/lars.jpg", // Using Lars's image as placeholder since Svenja's isn't listed
+    image: "/team/lars.jpg", // Using Lars's image as placeholder since Svenja's isn't listed
   },
   {
     id: 2,
@@ -54,7 +54,7 @@ export const teamMembers: TeamMember[] = [
       "Customer Experience",
       "Fullstack Development",
     ],
-    image: "/nic.jpg",
+    image: "/team/nic.jpg",
   },
   {
     id: 4,
@@ -71,7 +71,7 @@ export const teamMembers: TeamMember[] = [
       "Data Visualization",
       "API Integration",
     ],
-    image: "/hai_mi.jpg",
+    image: "/team/hai_mi.jpg",
   },
 
   {
@@ -90,7 +90,7 @@ export const teamMembers: TeamMember[] = [
       "Performance Optimization",
       "Microservices",
     ],
-    image: "/lars.jpg",
+    image: "/team/lars.jpg",
   },
   {
     id: 6,
@@ -108,6 +108,6 @@ export const teamMembers: TeamMember[] = [
       "Enterprise Architecture",
       "Performance Tuning",
     ],
-    image: "/marco.jpg",
+    image: "/team/marco.jpg",
   },
 ];
