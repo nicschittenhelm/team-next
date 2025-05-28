@@ -111,14 +111,14 @@ export default function Team() {
 
   return (
     <section
-      className="relative h-screen w-full bg-red-900 overflow-hidden flex items-center justify-center"
+      className="relative h-screen w-full  overflow-hidden flex items-center justify-center"
       ref={containerRef}
     >
       {/* Two-column layout container */}
       <div className="flex flex-col lg:flex-row w-full h-full max-w-[80vw] mx-aut">
         {/* Left side - Team grid */}
-        <div className="w-full lg:w-1/2 flex justify-center items-center relative py-20 z-10 bg-blue-700 perspective-distant">
-          <div className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6 rotate-y-[20deg] bg-yellow-800">
+        <div className="w-full lg:w-1/2 flex justify-center items-center relative py-20 z-10 perspective-distant">
+          <div className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6 rotate-y-[20deg] ">
             {teamMembers.map((member) => (
               <GsapMagnetic key={member.id}>
                 <div
@@ -133,7 +133,7 @@ export default function Team() {
           </div>
         </div>{" "}
         {/* Right side - Placeholder div and member details */}
-        <div className="w-full lg:w-1/2 h-full py-50 flex items-start bg-green-900">
+        <div className="w-full lg:w-1/2 h-full py-50 flex items-start ">
           <div className="flex flex-col gap-6 w-full px-4 md:px-6 lg:px-8 xl:px-10 mx-auto lg:mx-0">
             {" "}
             {/* Horizontal layout with image on left, details on right */}
@@ -166,28 +166,26 @@ export default function Team() {
                   {/* Name */}
                   <h3
                     ref={nameRef}
-                    className="text-3xl font-bold text-white mb-2 drop-shadow-md opacity-0"
+                    className="text-6xl font-bold text-white mb-2 drop-shadow-md opacity-0"
                   >
                     {selectedMemberData.name}
                   </h3>
-
                   {/* Role */}
                   <p
                     ref={roleRef}
-                    className="text-xl text-amber-400 font-medium mb-4 opacity-0"
+                    className="text-2xl text-gray-200 font-medium mb-4 opacity-0"
                   >
                     {selectedMemberData.role}
-                  </p>
-
+                  </p>{" "}
                   {/* Technology tags */}
                   <div
                     ref={tagsRef}
-                    className="flex flex-wrap gap-2 mb-4 opacity-0"
+                    className="flex flex-wrap pb-2 gap-2 mb-4 opacity-0 whitespace-nowrap"
                   >
                     {selectedMemberData.technologies.map((tech, index) => (
                       <span
                         key={index}
-                        className="text-sm bg-gray-800 text-gray-200 px-3 py-1 rounded-full border border-gray-700"
+                        className="text-sm bg-white text-gray-700 px-3 py-1 rounded-full border border-gray-200 inline-block"
                       >
                         {tech}
                       </span>
@@ -199,7 +197,7 @@ export default function Team() {
             {/* Description section below */}
             {selectedMemberData && (
               <div ref={descriptionRef} className="mt-2 opacity-0">
-                <p className="text-gray-300 text-base leading-relaxed">
+                <p className="text-white text-xl leading-relaxed">
                   {selectedMemberData.description}
                 </p>
               </div>

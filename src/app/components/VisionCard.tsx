@@ -51,13 +51,15 @@ const VisionCard = ({
       );
     }
   }, [progress]);
-
   return (
     <div
       className={`w-[70vw] h-[70vh] rounded-2xl p-20 bg-gradient-to-br ${
         gradients[cardIndex % gradients.length]
-      } border-2 border-white/50 relative overflow-hidden`}
+      } border-2 border-white/50 relative overflow-hidden shadow-[0_0_50px_20px_rgba(0,0,0,0.3)]`}
     >
+      {" "}
+      {/* Shadow enhancer */}
+      <div className="absolute -inset-1 bg-black/50 blur-xl rounded-3xl -z-10"></div>
       {/* Grid overlay */}
       <div
         aria-hidden="true"
@@ -78,26 +80,29 @@ const VisionCard = ({
         className="relative z-10 flex flex-col h-full justify-between"
       >
         <div>
+          {" "}
           {goal && (
-            <div className="mb-2 text-lg font-bold goal-text">{goal}</div>
+            <div className="mb-2 text-lg font-bold goal-text drop-shadow-sm text-white/95">
+              {goal}
+            </div>
           )}
           <h3
             ref={titleRef}
-            className="text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight drop-shadow-lg"
+            className="text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight drop-shadow-[0_4px_3px_rgba(0,0,0,0.5)]"
           >
             {title}
           </h3>
           <p
             ref={descRef}
-            className="text-lg text-white/90 mb-8 font-medium leading-relaxed max-w-3xl"
+            className="text-lg text-white/90 mb-8 font-medium leading-relaxed max-w-3xl drop-shadow-md"
           >
             {description}
           </p>
-        </div>
+        </div>{" "}
         {Array.isArray(approach) && approach.length > 0 && (
           <div
             ref={approachRef}
-            className="mt-4 text-base text-white/70 font-mono tracking-wide"
+            className="mt-4 text-base text-white/70 font-mono tracking-wide drop-shadow-md"
           >
             {approach.join(" // ")}
           </div>

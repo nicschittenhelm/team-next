@@ -19,8 +19,8 @@ export default function Home() {
     <main className="w-full bg-black text-white">
       <div className="relative">
         <Hero />
-        <Team />
         <Vision />
+        <Team />
       </div>
     </main>
   );
