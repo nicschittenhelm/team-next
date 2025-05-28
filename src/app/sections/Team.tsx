@@ -22,9 +22,7 @@ export default function Team() {
   const roleRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
-  const [selectedMember, setSelectedMember] = useState<number | null>(null);
-
-  // Function to handle card click and animate it to the placeholder
+  const [selectedMember, setSelectedMember] = useState<number | null>(null); // Function to handle card click and animate it to the placeholder
   const handleCardClick = (memberId: number) => {
     // Set the selected member
     setSelectedMember(memberId);
@@ -35,7 +33,9 @@ export default function Team() {
 
     // Get the positions for animation
     const cardRect = cardElement.getBoundingClientRect();
-    const placeholderRect = placeholderRef.current.getBoundingClientRect(); // Create a clone of the card for the animation
+    const placeholderRect = placeholderRef.current.getBoundingClientRect();
+
+    // Create a clone of the card for the animation
     const clone = cardElement.cloneNode(true) as HTMLElement;
     clone.style.position = "fixed";
     clone.style.left = `${cardRect.left}px`;
@@ -47,21 +47,12 @@ export default function Team() {
     clone.id = "card-clone";
     document.body.appendChild(clone);
 
-    // Calculate the square dimensions to match the placeholder
-    const squareSize = Math.min(placeholderRect.width, placeholderRect.height);
-
-    // Calculate centered position for the final square
-    const targetLeft =
-      placeholderRect.left + (placeholderRect.width - squareSize) / 2;
-    const targetTop =
-      placeholderRect.top + (placeholderRect.height - squareSize) / 2;
-
     // Animate the clone to the placeholder
     gsap.to(clone, {
-      left: targetLeft,
-      top: targetTop,
-      width: squareSize,
-      height: squareSize,
+      left: placeholderRect.left,
+      top: placeholderRect.top,
+      width: placeholderRect.width,
+      height: placeholderRect.height,
       duration: 0.4, // Faster animation
       ease: "power2.inOut",
       onComplete: () => {
@@ -120,14 +111,14 @@ export default function Team() {
 
   return (
     <section
-      className="relative h-screen w-full overflow-hidden bg-gradient-to-b from-gray-900 to-black"
+      className="relative h-screen w-full bg-red-900 overflow-hidden flex items-center justify-center"
       ref={containerRef}
     >
       {/* Two-column layout container */}
-      <div className="container flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row w-full h-full max-w-[80vw] mx-aut">
         {/* Left side - Team grid */}
-        <div className="w-full h-screen flex justify-center items-center lg:w-1/2 px-4 relative z-10  perspective-distant">
-          <div className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6 rotate-y-[20deg]">
+        <div className="w-full lg:w-1/2 flex justify-center items-center relative py-20 z-10 bg-blue-700 perspective-distant">
+          <div className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6 rotate-y-[20deg] bg-yellow-800">
             {teamMembers.map((member) => (
               <GsapMagnetic key={member.id}>
                 <div
@@ -140,37 +131,38 @@ export default function Team() {
               </GsapMagnetic>
             ))}
           </div>
-        </div>
-
+        </div>{" "}
         {/* Right side - Placeholder div and member details */}
-        <div className="w-full lg:w-1/2 pt-40 px-4">
-          <div className="flex flex-col gap-6">
+        <div className="w-full lg:w-1/2 h-full py-50 flex items-start bg-green-900">
+          <div className="flex flex-col gap-6 w-full px-4 md:px-6 lg:px-8 xl:px-10 mx-auto lg:mx-0">
+            {" "}
             {/* Horizontal layout with image on left, details on right */}
-            <div className="flex flex-col md:flex-row gap-6">
-              {/* Left - Image placeholder (maintaining exact size) */}
-              <div
-                ref={placeholderRef}
-                className="size-[250px] min-w-[250px] min-h-[250px] max-w-[250px] max-h-[250px] flex-shrink-0 border-8 border-dashed border-slate-700 bg-gray-900 relative overflow-hidden"
-              >
-                {selectedMemberData && (
-                  <Image
-                    src={selectedMemberData.image}
-                    alt={selectedMemberData.name}
-                    fill
-                    sizes="250px"
-                    priority
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: "center top",
-                    }}
-                    className="brightness-90"
-                  />
-                )}
+            <div className="flex flex-col md:flex-row gap-0 w-full">
+              {/* Left - Image placeholder with responsive but fixed ratio 2:3 */}
+              <div className="w-full md:w-1/2 lg:w-3/5 max-w-[400px] mx-auto md:mx-0">
+                <div
+                  ref={placeholderRef}
+                  className="aspect-[2/3] border-8 border-dashed border-slate-700 bg-gray-900 relative overflow-hidden"
+                >
+                  {selectedMemberData && (
+                    <Image
+                      src={selectedMemberData.image}
+                      alt={selectedMemberData.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 60vw, 42rem"
+                      priority
+                      style={{
+                        objectFit: "cover",
+                        objectPosition: "center top",
+                      }}
+                      className="brightness-90"
+                    />
+                  )}
+                </div>
               </div>
-
               {/* Right - Details stacked vertically */}
               {selectedMemberData && (
-                <div className="flex flex-col justify-start">
+                <div className="flex flex-col justify-start md:w-1/2 lg:w-2/5 md:min-w-0 md:pl-6">
                   {/* Name */}
                   <h3
                     ref={nameRef}
@@ -204,7 +196,6 @@ export default function Team() {
                 </div>
               )}
             </div>
-
             {/* Description section below */}
             {selectedMemberData && (
               <div ref={descriptionRef} className="mt-2 opacity-0">
