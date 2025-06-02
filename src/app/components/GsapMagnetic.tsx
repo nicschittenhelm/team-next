@@ -12,7 +12,7 @@ interface GsapMagneticProps {
 
 export default function GsapMagnetic({
   children,
-  strength = 0.5,
+  strength = 0.3, // reduced from 0.5
   ease = 0.2,
 }: GsapMagneticProps) {
   // Create a ref that we'll pass to the child component

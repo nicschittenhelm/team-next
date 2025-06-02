@@ -114,30 +114,41 @@ export default function Team() {
     // animation to complete first (handled in handleCardClick)
   }, [selectedMember]);
 
-  // ScrollTrigger effect for grid rotation
+  // ScrollTrigger effect for grid rotation and parallax
   useEffect(() => {
     if (!gridRef.current || !containerRef.current) return;
     const grid = gridRef.current;
     const section = containerRef.current;
-    // Set initial rotation
-    gsap.set(grid, { rotateY: 40 });
-    // Animate rotation with scroll
+    // Set initial rotation and Y for grid, and X for right panel (more pronounced)
+    gsap.set(grid, { rotateY: 40, y: 120 });
+    const rightPanel = section.querySelector(".team-details-parallax");
+    if (rightPanel) {
+      gsap.set(rightPanel, { x: 160 }); // removed opacity
+    }
+    // Animate rotation and parallax with scroll
     const trigger = ScrollTrigger.create({
       trigger: section,
-      start: "top center", // changed from 'top bottom'
-      end: "bottom center", // changed from 'bottom top'
+      start: "top bottom",
+      end: "bottom center",
       scrub: true,
       onUpdate: (self) => {
-        // Progress: 0 (start) to 1 (end)
-        // At 0: rotateY 40deg, at 0.5: 20deg, at 1: 2deg
         const progress = self.progress;
+        // Rotation
         let rotateY;
         if (progress < 0.5) {
-          rotateY = 40 - 40 * progress; // 40 to 20
+          rotateY = 40 - 40 * progress;
         } else {
-          rotateY = 20 - 18 * (progress - 0.5) * 2; // 20 to 2
+          rotateY = 20 - 18 * (progress - 0.5) * 2;
         }
-        gsap.set(grid, { rotateY });
+        // Parallax Y for grid (from 120px to 0)
+        const y = 120 - 120 * progress;
+        gsap.set(grid, { rotateY, y });
+        // Parallax X for right panel (from 160px to 0)
+        if (rightPanel) {
+          gsap.set(rightPanel, {
+            x: 160 - 160 * progress,
+          });
+        }
       },
     });
     return () => {
@@ -176,7 +187,7 @@ export default function Team() {
         </div>{" "}
         {/* Right side - Placeholder div and member details */}
         <div className="w-full lg:w-1/2 h-full py-50 flex items-start ">
-          <div className="flex flex-col gap-6 w-full px-4 md:px-6 lg:px-8 xl:px-10 mx-auto lg:mx-0">
+          <div className="flex flex-col gap-6 w-full px-4 md:px-6 lg:px-8 xl:px-10 mx-auto lg:mx-0 team-details-parallax">
             {" "}
             {/* Horizontal layout with image on left, details on right */}
             <div className="flex flex-col md:flex-row gap-0 w-full">
