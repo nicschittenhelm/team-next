@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TeamCard from "../components/TeamCard";
-import { teamMembers } from "../data/teamData";
+import { teamMembers, memberColors } from "../data/teamData";
 import GsapMagnetic from "../components/GsapMagnetic";
 import Image from "next/image";
 import ShaderBackground from "../components/ShaderBackground";
@@ -22,10 +22,14 @@ export default function Team() {
   const roleRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
-  const [selectedMember, setSelectedMember] = useState<number | null>(null); // Function to handle card click and animate it to the placeholder
+  const [selectedMember, setSelectedMember] = useState<number | null>(null);
+  const [colorIndex, setColorIndex] = useState(0);
+
+  // Function to handle card click and animate it to the placeholder
   const handleCardClick = (memberId: number) => {
     // Set the selected member
     setSelectedMember(memberId);
+    setColorIndex((prev) => (prev + 1) % memberColors.length);
 
     // Get the clicked card element
     const cardElement = document.getElementById(`team-card-${memberId}`);
@@ -115,7 +119,8 @@ export default function Team() {
       ref={containerRef}
     >
       {/* GLSL shader background */}
-      <ShaderBackground color={selectedMemberData?.color} />
+      <ShaderBackground color={memberColors[colorIndex]} />
+
       {/* Two-column layout container */}
       <div className="flex flex-col lg:flex-row w-full h-full max-w-[80vw] mx-aut">
         {/* Left side - Team grid */}

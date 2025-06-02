@@ -31,11 +31,10 @@ export default function ShaderBackground({
       uniform float u_time;
       uniform vec3 u_color;
       uniform bool u_useColor;
-      // Simple 2D random
       float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
       }
-      // Minimal value noise
+      // 2D value noise with interpolation for smooth shapes
       float valueNoise(vec2 st) {
         vec2 i = floor(st);
         vec2 f = fract(st);
@@ -47,19 +46,15 @@ export default function ShaderBackground({
         return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
       }
       void main() {
-        // Large scale, slow morphing
-        float n = valueNoise(vUv * 3.0 + vec2(u_time * 0.12, u_time * 0.09));
-        float n2 = valueNoise(vUv * 2.0 - vec2(u_time * 0.08, u_time * 0.13));
-        float shape = max(n, n2); // combine shapes
-        // Make mask threshold higher for more black (less shapes)
-        float mask = smoothstep(0.55, 0.75, shape);
-        // Center mask: 1.0 in center, 0.0 at edges, smooth falloff
+        // Morphing shape mask
+        float shape = valueNoise(vUv * 2.0 + vec2(u_time * 0.08, u_time * 0.08));
+        float mask = smoothstep(0.4, 0.8, shape); // Adjusted thresholds to reduce black areas
+        // Radial mask for edge fade
         vec2 center = vUv - 0.5;
-        float dist = length(center) * 1.0; // mask is now much wider
-        float centerMask = 1.0 - smoothstep(0.35, 0.5, dist); // softer fade out towards edges
-        // Multiply shape mask by center mask to "desolve" at edges
+        float dist = length(center);
+        float centerMask = 1.0 - smoothstep(0.35, 0.5, dist);
         mask *= centerMask;
-        // Color: animate hue for the white part, keep black for the rest
+        // Color: animated rainbow or member color with hue variation
         vec3 rgb;
         if (!u_useColor) {
           float hue = 0.6 + 0.4 * sin(u_time * 0.1 + vUv.x * 2.0);
@@ -69,7 +64,7 @@ export default function ShaderBackground({
           vec3 p = abs(fract(vec3(hue) + k) * 6.0 - 3.0);
           rgb = val * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), sat);
         } else {
-          // Convert base color to HSV
+          // Convert base color to HSV and add hue variation
           vec3 base = u_color;
           float cmax = max(base.r, max(base.g, base.b));
           float cmin = min(base.r, min(base.g, base.b));
@@ -84,15 +79,16 @@ export default function ShaderBackground({
           }
           float sat = (cmax == 0.0) ? 0.0 : delta / cmax;
           float val = cmax;
-          // Add small hue variation per-pixel
           float hueVar = 0.08 * sin(u_time * 0.2 + vUv.x * 6.0 + vUv.y * 6.0);
           float newHue = mod(hue + hueVar, 1.0);
-          // HSV to RGB
           vec3 k = vec3(1.0, 2.0/3.0, 1.0/3.0);
           vec3 p = abs(fract(vec3(newHue) + k) * 6.0 - 3.0);
           rgb = val * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), sat);
         }
-        // Blend color with black based on mask (mask is 0..1, so gray is possible)
+        // Highlight the peaks of the noise by blending towards white
+        float highlight = smoothstep(0.7, 1.0, shape);
+        rgb = mix(rgb, vec3(1.0), highlight);
+        // Blend color with black based on mask
         vec3 finalColor = mix(vec3(0.0), rgb, mask);
         gl_FragColor = vec4(finalColor, 1.0);
       }

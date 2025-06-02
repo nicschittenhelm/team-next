@@ -1,6 +1,16 @@
 // src/app/data/teamData.ts
 import { TeamMember } from "../components/TeamCard";
 
+// Team member color codes
+export const memberColors: [number, number, number][] = [
+  [0.8, 0.2, 0.6], // purple-pink
+  [0.2, 0.6, 1.0], // blue
+  [0.2, 0.8, 0.3], // green
+  [0.1, 0.7, 1.0], // cyan
+  [0.7, 0.2, 1.0], // violet
+  [1.0, 0.7, 0.2], // orange-yellow
+];
+
 // Team member data with detailed information for software developers
 export const teamMembers: TeamMember[] = [
   {
@@ -19,7 +29,6 @@ export const teamMembers: TeamMember[] = [
       "Team Leadership",
     ],
     image: "/team/thi.jpg",
-    color: [0.8, 0.2, 0.6], // purple-pink
   },
 
   {
@@ -38,7 +47,6 @@ export const teamMembers: TeamMember[] = [
       "Microservices",
     ],
     image: "/team/lars.jpg",
-    color: [0.2, 0.6, 1.0], // blue
   },
   {
     id: 2,
@@ -57,7 +65,6 @@ export const teamMembers: TeamMember[] = [
       "Fullstack Development",
     ],
     image: "/team/nic.jpg",
-    color: [0.2, 0.8, 0.3], // green
   },
   {
     id: 4,
@@ -75,7 +82,6 @@ export const teamMembers: TeamMember[] = [
       "API Integration",
     ],
     image: "/team/hai_mi.jpg",
-    color: [1.0, 0.7, 0.2], // orange-yellow
   },
 
   {
@@ -95,7 +101,6 @@ export const teamMembers: TeamMember[] = [
       "Microservices",
     ],
     image: "/team/lars.jpg",
-    color: [0.1, 0.7, 1.0], // cyan
   },
   {
     id: 6,
@@ -114,6 +119,5 @@ export const teamMembers: TeamMember[] = [
       "Performance Tuning",
     ],
     image: "/team/marco.jpg",
-    color: [0.9, 0.5, 0.1], // orange
   },
 ];
