@@ -22,6 +22,7 @@ export default function Team() {
   const roleRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [selectedMember, setSelectedMember] = useState<number | null>(null);
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -113,6 +114,37 @@ export default function Team() {
     // animation to complete first (handled in handleCardClick)
   }, [selectedMember]);
 
+  // ScrollTrigger effect for grid rotation
+  useEffect(() => {
+    if (!gridRef.current || !containerRef.current) return;
+    const grid = gridRef.current;
+    const section = containerRef.current;
+    // Set initial rotation
+    gsap.set(grid, { rotateY: 40 });
+    // Animate rotation with scroll
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top center", // changed from 'top bottom'
+      end: "bottom center", // changed from 'bottom top'
+      scrub: true,
+      onUpdate: (self) => {
+        // Progress: 0 (start) to 1 (end)
+        // At 0: rotateY 40deg, at 0.5: 20deg, at 1: 2deg
+        const progress = self.progress;
+        let rotateY;
+        if (progress < 0.5) {
+          rotateY = 40 - 40 * progress; // 40 to 20
+        } else {
+          rotateY = 20 - 18 * (progress - 0.5) * 2; // 20 to 2
+        }
+        gsap.set(grid, { rotateY });
+      },
+    });
+    return () => {
+      trigger.kill();
+    };
+  }, []);
+
   return (
     <section
       className="relative h-screen w-full  overflow-hidden flex items-center justify-center"
@@ -125,7 +157,10 @@ export default function Team() {
       <div className="flex flex-col lg:flex-row w-full h-full max-w-[80vw] mx-aut">
         {/* Left side - Team grid */}
         <div className="w-full lg:w-1/2 flex justify-center items-center relative py-20 z-10 perspective-distant">
-          <div className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6 rotate-y-[20deg] ">
+          <div
+            ref={gridRef}
+            className="grid w-2/3 grid-cols-1 md:grid-cols-2 gap-6"
+          >
             {teamMembers.map((member) => (
               <GsapMagnetic key={member.id}>
                 <div
