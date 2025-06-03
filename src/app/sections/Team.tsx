@@ -23,6 +23,7 @@ export default function Team() {
   const tagsRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const shaderBgRef = useRef<HTMLDivElement>(null);
   const [selectedMember, setSelectedMember] = useState<number | null>(null);
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -156,13 +157,47 @@ export default function Team() {
     };
   }, []);
 
+  // Parallax effect for ShaderBackground
+  useEffect(() => {
+    if (!containerRef.current || !shaderBgRef.current) return;
+    const section = containerRef.current;
+    const shaderBg = shaderBgRef.current;
+
+    // Set initial position (offscreen at bottom)
+    gsap.set(shaderBg, { yPercent: 100 });
+
+    // Parallax scroll effect: animate from yPercent: 100 (offscreen) to yPercent: 0 (onscreen)
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top bottom",
+      end: "top top",
+      scrub: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        gsap.to(shaderBg, {
+          yPercent: 100 - 100 * progress,
+          overwrite: "auto",
+          duration: 0.1,
+        });
+      },
+    });
+    return () => {
+      trigger.kill();
+    };
+  }, []);
+
   return (
     <section
       className="relative h-screen w-full  overflow-hidden flex items-center justify-center"
       ref={containerRef}
     >
-      {/* GLSL shader background */}
-      <ShaderBackground color={memberColors[colorIndex]} />
+      {/* GLSL shader background with parallax ref */}
+      <div
+        ref={shaderBgRef}
+        className="absolute inset-0 pointer-events-none z-0"
+      >
+        <ShaderBackground color={memberColors[colorIndex]} />
+      </div>
 
       {/* Two-column layout container */}
       <div className="flex flex-col lg:flex-row w-full h-full max-w-[80vw] mx-aut">
