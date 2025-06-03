@@ -82,13 +82,13 @@ const VisionCard = ({
         <div>
           {" "}
           {goal && (
-            <div className="mb-2 text-lg font-bold goal-text drop-shadow-sm text-white/95">
+            <div className="mb-2 text-lg font-normal font-lexend text-white/95 goal-text drop-shadow-sm">
               {goal}
             </div>
           )}
           <h3
             ref={titleRef}
-            className="text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight drop-shadow-[0_4px_3px_rgba(0,0,0,0.5)]"
+            className="font-lexend font-bold text-6xl text-white mb-4 tracking-tight leading-tight drop-shadow-[0_4px_3px_rgba(0,0,0,0.5)] uppercase"
           >
             {title}
           </h3>
@@ -102,7 +102,7 @@ const VisionCard = ({
         {Array.isArray(approach) && approach.length > 0 && (
           <div
             ref={approachRef}
-            className="mt-4 text-base text-white/70 font-mono tracking-wide drop-shadow-md"
+            className="mt-4 text-base text-white/70 font-share-tech-mono tracking-wide drop-shadow-md"
           >
             {approach.join(" // ")}
           </div>

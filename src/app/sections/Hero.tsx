@@ -165,77 +165,85 @@ export default function Hero() {
           top: 0,
           width: "100%",
           height: "100%",
-          pointerEvents: "none", // This prevents any mouse interaction
+          pointerEvents: "none",
         }}
       >
         <ShaderGradient
           animate="on"
-          type="waterPlane"
+          type="sphere"
           wireframe={false}
           shader="defaults"
           uTime={0}
           uSpeed={0.1}
-          uStrength={1.5}
-          uDensity={2.5}
+          uStrength={0.8}
+          uDensity={2.3}
           uFrequency={5.5}
-          positionX={-1.4}
-          positionY={0}
+          uAmplitude={0.3}
+          positionX={-0.8}
+          positionY={0.8}
           positionZ={0}
-          rotationX={10}
-          rotationY={10}
-          rotationZ={50}
-          color1="#F25042"
-          color2="#A8C4BC"
-          color3="#000000" //#007D7E
+          rotationX={0}
+          rotationY={0}
+          rotationZ={0}
+          color1="#000000"
+          color2="#0dff00"
+          color3="#003300"
           reflection={0.1}
-          // View (camera) props
           cAzimuthAngle={180}
           cPolarAngle={90}
           cDistance={3.6}
-          cameraZoom={1}
-          // Effect props
+          cameraZoom={9.0}
           lightType="3d"
-          brightness={1.2}
-          envPreset="city"
+          brightness={0.8}
+          envPreset="lobby"
           grain="off"
-          // Tool props
-          toggleAxis={false} // axesHelper=off
-          zoomOut={false} // based on zoomOut not explicitly set
-          hoverState=""
+          toggleAxis={false}
           // Optional - if using transition features
           enableTransition={false}
         />
       </ShaderGradientCanvas>
 
       {/* Animated text content */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="flex flex-col items-center  mix-blend-difference">
-          <div className="flex items-baseline">
+      <div className="absolute inset-0 flex items-center z-10">
+        <div className="flex flex-col items-start justify-center h-full pl-16">
+          <div className="flex flex-row items-baseline gap-6">
             <h1
               ref={nextRef}
-              className="text-8xl md:text-[12rem] mix-blend-difference text-black font-black tracking-tight"
+              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 drop-shadow-xl"
+              style={{ letterSpacing: "-0.05em" }}
             >
               NEXT
             </h1>
-            <span ref={genRef} className="text-4xl md:text-6xl font-bold">
-              Gen
+            <span
+              ref={genRef}
+              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
+              style={{ letterSpacing: "-0.05em" }}
+            >
+              GEN
             </span>
           </div>
-
-          <div className="flex pl-30">
+          <div className="flex flex-row gap-6 mt-4">
             <span
               ref={webRef}
-              className="text-4xl md:text-6xl leading-16 font-bold"
+              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
+              style={{ letterSpacing: "-0.05em" }}
             >
-              Web
+              WEB
             </span>
             <span
               ref={solutionRef}
-              className="text-8xl md:text-9xl leading-16 font-black tracking-tight"
+              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
+              style={{ letterSpacing: "-0.05em" }}
             >
-              Solution
+              SOLUTION
             </span>
           </div>
+          <span className="font-share-tech-mono font-normal mt-10 text-[1.25rem] md:text-[1.75rem] text-white/80 tracking-tight drop-shadow-lg flex items-center gap-2 lowercase">
+            <span className="text-[#0dff00] text-3xl font-bold">
+              &#47;&#47;
+            </span>
+            the benchmark for modern web development
+          </span>
         </div>
       </div>
     </section>

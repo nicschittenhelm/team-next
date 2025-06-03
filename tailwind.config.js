@@ -7,6 +7,24 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        lexend: [
+          "var(--font-lexend)",
+          "Lexend",
+          "Arial",
+          "Helvetica",
+          "sans-serif",
+        ],
+        inter: ["var(--font-inter)", "Arial", "Helvetica", "sans-serif"],
+        "share-tech-mono": [
+          "var(--font-share-tech-mono)",
+          "Share Tech Mono",
+          "Fira Mono",
+          "Menlo",
+          "Consolas",
+          "monospace",
+        ],
+      },
       perspective: {
         1000: "1000px",
       },

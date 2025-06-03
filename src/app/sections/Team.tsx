@@ -232,14 +232,14 @@ export default function Team() {
                   {/* Name */}
                   <h3
                     ref={nameRef}
-                    className="text-6xl font-bold text-white mb-2 drop-shadow-md opacity-0"
+                    className="font-lexend font-bold text-6xl text-white mb-2 drop-shadow-md opacity-0 uppercase"
                   >
                     {selectedMemberData.name}
                   </h3>
                   {/* Role */}
                   <p
                     ref={roleRef}
-                    className="text-2xl text-gray-200 font-medium mb-4 opacity-0"
+                    className="font-lexend font-normal text-2xl text-gray-200 mb-4 opacity-0 uppercase"
                   >
                     {selectedMemberData.role}
                   </p>{" "}
@@ -251,7 +251,7 @@ export default function Team() {
                     {selectedMemberData.technologies.map((tech, index) => (
                       <span
                         key={index}
-                        className="text-sm bg-white text-gray-700 px-3 py-1 rounded-full border border-gray-200 inline-block"
+                        className="font-share-tech-mono text-base md:text-lg bg-white text-black px-3 py-1 rounded-full border border-gray-200 inline-block"
                       >
                         {tech}
                       </span>
