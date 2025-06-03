@@ -195,7 +195,20 @@ export default function Team() {
               <div className="w-full md:w-1/2 lg:w-3/5 max-w-[400px] mx-auto md:mx-0">
                 <div
                   ref={placeholderRef}
-                  className="aspect-[2/3] border-2 border-dashed border-white relative overflow-hidden"
+                  className={
+                    selectedMemberData
+                      ? "aspect-[2/3] rounded-xl relative overflow-hidden"
+                      : "aspect-[2/3] rounded-xl relative overflow-hidden backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                  }
+                  style={
+                    selectedMemberData
+                      ? undefined
+                      : {
+                          WebkitBackdropFilter:
+                            "blur(360px) hue-rotate(200deg)",
+                          backdropFilter: "blur(360px) hue-rotate(200deg)",
+                        }
+                  }
                 >
                   {selectedMemberData && (
                     <Image
@@ -214,7 +227,7 @@ export default function Team() {
                 </div>
               </div>
               {/* Right - Details stacked vertically */}
-              {selectedMemberData && (
+              {selectedMemberData ? (
                 <div className="flex flex-col justify-start md:w-1/2 lg:w-2/5 md:min-w-0 md:pl-6">
                   {/* Name */}
                   <h3
@@ -245,14 +258,140 @@ export default function Team() {
                     ))}
                   </div>
                 </div>
+              ) : (
+                <div className="flex flex-col justify-start md:w-1/2 lg:w-2/5 md:min-w-0 md:pl-6">
+                  {/* Placeholder Name */}
+                  <div className="mb-2">
+                    <div
+                      className="w-3/4 rounded-xl backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "4.5rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                  </div>
+                  {/* Placeholder Role */}
+                  <div className="mb-8">
+                    <div
+                      className="w-1/2 rounded-lg backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                  </div>
+                  {/* Placeholder Tags */}
+                  <div className="flex flex-wrap pb-2 gap-2 mb-4">
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "3.5rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "4rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "6rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "4rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "5rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "4.5rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                    <div
+                      className="rounded-full backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                      style={{
+                        height: "2rem",
+                        width: "6rem",
+                        WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                        backdropFilter: "blur(360px) hue-rotate(200deg)",
+                      }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
             {/* Description section below */}
-            {selectedMemberData && (
+            {selectedMemberData ? (
               <div ref={descriptionRef} className="mt-2 opacity-0">
                 <p className="text-white text-xl leading-relaxed">
                   {selectedMemberData.description}
                 </p>
+              </div>
+            ) : (
+              <div className="mt-2">
+                <div
+                  className="w-3/4 rounded-lg backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg] mb-2"
+                  style={{
+                    height: "1.5rem",
+                    WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                    backdropFilter: "blur(360px) hue-rotate(200deg)",
+                  }}
+                />
+                <div
+                  className="w-3/4 rounded-lg backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg] mb-2"
+                  style={{
+                    height: "1.5rem",
+                    WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                    backdropFilter: "blur(360px) hue-rotate(200deg)",
+                  }}
+                />
+                <div
+                  className="w-3/4 rounded-lg backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg] mb-2"
+                  style={{
+                    height: "1.5rem",
+                    WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                    backdropFilter: "blur(360px) hue-rotate(200deg)",
+                  }}
+                />
+                <div
+                  className="w-2/3 rounded-lg backdrop-blur-[360px] bg-white/10 backdrop-hue-rotate-[200deg]"
+                  style={{
+                    height: "1.5rem",
+                    WebkitBackdropFilter: "blur(360px) hue-rotate(200deg)",
+                    backdropFilter: "blur(360px) hue-rotate(200deg)",
+                  }}
+                />
               </div>
             )}
           </div>

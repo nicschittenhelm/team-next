@@ -46,7 +46,7 @@ export const teamMembers: TeamMember[] = [
       "System Design",
       "Microservices",
     ],
-    image: "/team/lars.jpg",
+    image: "/team/svenja.jpg",
   },
   {
     id: 2,
