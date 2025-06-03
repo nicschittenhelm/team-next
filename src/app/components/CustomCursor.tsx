@@ -6,7 +6,7 @@ export default function CustomCursor() {
   const mouse = useRef({ x: 0, y: 0 });
   const cursorPos = useRef({ x: 0, y: 0 });
   const circle = useRef(null);
-  const size = 80;
+  const size = 40;
 
   // Lerp function for smooth interpolation
   const lerp = (start, end, t) => start * (1 - t) + end * t;
@@ -58,10 +58,10 @@ export default function CustomCursor() {
           style={{
             width: size,
             height: size,
-            backdropFilter: "grayscale(1) invert(1) blur(4px)",
-            WebkitBackdropFilter: "grayscale(1) invert(1) blur(10px)",
+            border: "2px solid white",
+            background: "transparent",
           }}
-          className="top-0 left-0 fixed rounded-full"
+          className="top-0 left-0 fixed rounded-full pointer-events-none"
         />
       </div>
     </>
