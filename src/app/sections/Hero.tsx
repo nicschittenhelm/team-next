@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,91 +14,14 @@ export default function Hero() {
   const genRef = useRef<HTMLSpanElement>(null);
   const webRef = useRef<HTMLSpanElement>(null);
   const solutionRef = useRef<HTMLSpanElement>(null);
+  const [loading, setLoading] = useState(true);
+  const loadingRef = useRef<HTMLDivElement>(null);
+  const nextBoxRef = useRef<HTMLDivElement>(null);
 
-  // Advanced animation on component mount
+  // Advanced animation on component mount - but not for NEXT text
   useEffect(() => {
-    const scrambleText = () => {
-      const originalText = "NEXT";
-      // Extended character set for more randomness
-      const chars =
-        "!@#$%^&*()_+{}:<>?|~`-=[];',./ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      const duration = 2.0;
-      const element = nextRef.current;
-
-      if (!element) return;
-
-      // Hide initially
-      gsap.set(element, { opacity: 0 });
-
-      let currentText = "";
-      let currentLength = 0;
-      const scrambleTimeline = gsap.timeline({
-        onStart: () => {
-          gsap.to(element, { opacity: 1, duration: 0.3 });
-        },
-      });
-
-      // Using more optimized animation approach
-      scrambleTimeline.to(
-        {},
-        {
-          duration: duration,
-          ease: "power2.inOut", // Smoother easing
-          onUpdate: function () {
-            const progress = this.progress();
-
-            // Gradually reveal characters as animation progresses
-            const targetLength = Math.ceil(
-              originalText.length * Math.min(progress * 2, 1)
-            );
-
-            // Only update when needed
-            if (targetLength !== currentLength) {
-              currentLength = targetLength;
-
-              // Build scrambled text more efficiently
-              const textArray = [];
-
-              for (let i = 0; i < originalText.length; i++) {
-                if (i < currentLength) {
-                  // Revealed character
-                  textArray.push(originalText[i]);
-                } else if (i === currentLength) {
-                  // Scrambled character at the edge
-                  textArray.push(
-                    chars[Math.floor(Math.random() * chars.length)]
-                  );
-                }
-                // Skip pushing empty characters for better performance
-              }
-
-              currentText = textArray.join("");
-              element.textContent = currentText;
-            } else if (currentLength < originalText.length && progress < 1) {
-              // Just update the scrambled character at the edge for a dynamic effect
-              const textArray = currentText.split("");
-              textArray[currentLength] =
-                chars[Math.floor(Math.random() * chars.length)];
-              currentText = textArray.join("");
-              element.textContent = currentText;
-            }
-          },
-          onComplete: () => {
-            // Ensure the final text is correct
-            element.textContent = originalText;
-          },
-        }
-      );
-
-      return scrambleTimeline;
-    };
-
-    // Setup animations
-    const masterTimeline = gsap.timeline();
-
-    // 1. NEXT - scramble in
-    const scrambleAnim = scrambleText();
-    if (scrambleAnim) masterTimeline.add(scrambleAnim);
+    // Setup animations for other elements only, not NEXT
+    const masterTimeline = gsap.timeline(); // Force the NEXT text to be visible from the very beginning
 
     // 2. Gen - slide from left
     masterTimeline.fromTo(
@@ -155,8 +78,49 @@ export default function Hero() {
       // Cleanup
       masterTimeline.kill();
     };
-  }, []);
+  }, []); // Separate useEffect for the loading animation only
+  useEffect(() => {
+    // The NEXT text is handled by the first useEffect - keep it completely independent
 
+    if (loadingRef.current && nextBoxRef.current) {
+      // Get the bounding box of the NEXT text background
+      const nextBox = nextBoxRef.current.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Start as a full-viewport rectangle, no border radius
+      gsap.set(loadingRef.current, {
+        left: 0,
+        top: 0,
+        width: vw,
+        height: vh,
+        borderRadius: 0,
+        position: "fixed",
+        zIndex: 50,
+        background: "#0dff00",
+      });
+
+      // Create a completely separate timeline for loading animation only
+      // This ensures it doesn't affect the NEXT text
+      const loadingTimeline = gsap.timeline({
+        paused: false, // Start the animation right away
+        defaults: { ease: "power3.inOut" }, // Default ease
+      });
+
+      // Add the shrinking animation to the timeline
+      loadingTimeline.to(loadingRef.current, {
+        left: nextBox.left,
+        top: nextBox.top,
+        width: nextBox.width,
+        height: nextBox.height,
+        borderRadius: 0, // End as sharp rectangle
+        duration: 1.1,
+        delay: 0.7,
+        ease: "power3.inOut",
+        onComplete: () => setLoading(false),
+      });
+    }
+  }, []);
   return (
     <section className="relative w-full h-screen">
       <ShaderGradientCanvas
@@ -174,7 +138,7 @@ export default function Hero() {
           wireframe={false}
           shader="defaults"
           uTime={0}
-          uSpeed={0.1}
+          uSpeed={0.03}
           uStrength={0.8}
           uDensity={2.3}
           uFrequency={5.5}
@@ -201,19 +165,41 @@ export default function Hero() {
           // Optional - if using transition features
           enableTransition={false}
         />
-      </ShaderGradientCanvas>
-
-      {/* Animated text content */}
-      <div className="absolute inset-0 flex items-center z-10">
+      </ShaderGradientCanvas>{" "}
+      {/* Animated text content - with isolation creating a new stacking context */}
+      <div className="absolute inset-0 flex items-center">
+        {" "}
+        {/* Creates new stacking context */}
         <div className="flex flex-col items-start justify-center h-full pl-16">
           <div className="flex flex-row items-baseline gap-6">
-            <h1
-              ref={nextRef}
-              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 drop-shadow-xl"
-              style={{ letterSpacing: "-0.05em" }}
+            <div
+              ref={nextBoxRef}
+              className="inline-block"
+              style={{ position: "relative", zIndex: 200 }}
             >
-              NEXT
-            </h1>
+              {" "}
+              <h1
+                ref={nextRef}
+                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 drop-shadow-xl"
+                style={{
+                  letterSpacing: "-0.05em",
+                  position: "relative",
+                  zIndex: 200,
+                  opacity: 1,
+                  visibility: "visible",
+                  transform: "none", // Prevent any transform animations
+                  transition: "none", // Prevent any CSS transitions
+                  willChange: "auto", // Don't optimize for changes
+                  animation: "none", // Prevent any CSS animations
+                  perspective: "none", // Prevent 3D effects
+                  transformOrigin: "center center", // Standard transform origin
+                  scale: 1, // Explicit scale to prevent scaling
+                  filter: "none", // No filters
+                }}
+              >
+                NEXT
+              </h1>
+            </div>
             <span
               ref={genRef}
               className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
@@ -242,10 +228,32 @@ export default function Hero() {
             <span className="text-[#0dff00] text-3xl font-bold">
               &#47;&#47;
             </span>
-            the benchmark for modern web development
+            the benchmark for modern web development{" "}
           </span>
         </div>
-      </div>
+      </div>{" "}
+      {/* Loading overlay with specifically configured CSS to ensure text shows through */}
+      {loading && (
+        <div
+          ref={loadingRef}
+          className="pointer-events-none" /* Prevents blocking interaction */
+          style={{
+            willChange: "width,height,left,top",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 50 /* Lower z-index than text content */,
+            background: "#0dff00",
+            mixBlendMode: "normal" /* Helps with layering */,
+            contain: "paint" /* Performance optimization */,
+            transform: "translateZ(0)" /* Create a new stacking context */,
+            backfaceVisibility:
+              "hidden" /* Prevent any 3D transforms affecting other elements */,
+          }}
+        />
+      )}
     </section>
   );
 }
