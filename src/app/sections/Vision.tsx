@@ -11,6 +11,11 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+export const sectionMeta = {
+  id: "vision",
+  title: "Vision",
+};
+
 export default function Vision() {
   // Configurable animation constants
   const PERSPECTIVE = "1200px";

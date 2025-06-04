@@ -8,6 +8,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 // Register the ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
+export const sectionMeta = {
+  id: "hero",
+  title: "Hero",
+};
+
 export default function Hero() {
   // Create refs for the text elements
   const nextRef = useRef<HTMLHeadingElement>(null);
@@ -78,46 +83,88 @@ export default function Hero() {
       // Cleanup
       masterTimeline.kill();
     };
-  }, []); // Separate useEffect for the loading animation only
+  }, []);
   useEffect(() => {
-    // The NEXT text is handled by the first useEffect - keep it completely independent
-
-    if (loadingRef.current && nextBoxRef.current) {
-      // Get the bounding box of the NEXT text background
-      const nextBox = nextBoxRef.current.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      // Start as a full-viewport rectangle, no border radius
-      gsap.set(loadingRef.current, {
-        left: 0,
-        top: 0,
-        width: vw,
-        height: vh,
-        borderRadius: 0,
-        position: "fixed",
-        zIndex: 50,
-        background: "#0dff00",
-      });
-
-      // Create a completely separate timeline for loading animation only
-      // This ensures it doesn't affect the NEXT text
-      const loadingTimeline = gsap.timeline({
-        paused: false, // Start the animation right away
-        defaults: { ease: "power3.inOut" }, // Default ease
-      });
-
-      // Add the shrinking animation to the timeline
-      loadingTimeline.to(loadingRef.current, {
-        left: nextBox.left,
-        top: nextBox.top,
-        width: nextBox.width,
-        height: nextBox.height,
-        borderRadius: 0, // End as sharp rectangle
-        duration: 1.1,
-        delay: 0.7,
-        ease: "power3.inOut",
-        onComplete: () => setLoading(false),
+    // Slot machine animation for NEXT text
+    if (nextRef.current) {
+      const element = nextRef.current;
+      const originalText = "NEXT";
+      element.innerHTML = "";
+      const spans = [];
+      for (let idx = 0; idx < originalText.length; idx++) {
+        const span = document.createElement("span");
+        span.textContent = "";
+        span.style.display = "inline-block";
+        span.style.transform = "translateY(-120%)";
+        span.style.opacity = "0";
+        span.style.transition = "none";
+        element.appendChild(span);
+        spans.push(span);
+      }
+      let finishedCount = 0;
+      const onAllDone = () => {
+        // Trigger the loading background animation only after all slot letters are in place
+        if (loadingRef.current && nextBoxRef.current) {
+          const nextBox = nextBoxRef.current.getBoundingClientRect();
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          gsap.set(loadingRef.current, {
+            left: 0,
+            top: 0,
+            width: vw,
+            height: vh,
+            borderRadius: 0,
+            position: "fixed",
+            zIndex: 50,
+            background: "#0dff00",
+          });
+          const loadingTimeline = gsap.timeline({
+            paused: false,
+            defaults: { ease: "power3.inOut" },
+          });
+          loadingTimeline.to(loadingRef.current, {
+            left: nextBox.left,
+            top: nextBox.top,
+            width: nextBox.width,
+            height: nextBox.height,
+            borderRadius: 0,
+            duration: 1.1,
+            delay: 0.1, // start almost immediately after slot machine
+            ease: "power3.inOut",
+            onComplete: () => setLoading(false),
+          });
+        }
+      };
+      // Animate each letter like a slot machine
+      spans.forEach((span, idx) => {
+        // Only roll down the actual letter, no scramble
+        gsap.set(span, {
+          y: -80,
+          opacity: 0,
+          rotateX: -80,
+          transformPerspective: 400,
+          transformOrigin: "50% 0%",
+          z: 0,
+        });
+        setTimeout(() => {
+          span.textContent = originalText[idx];
+          gsap.to(span, {
+            y: 0,
+            opacity: 1,
+            rotateX: 0,
+            duration: 1.1,
+            ease: "expo.out",
+            transformPerspective: 400,
+            transformOrigin: "50% 0%",
+            z: 0,
+            onComplete: () => {
+              finishedCount++;
+              if (finishedCount === spans.length) {
+                onAllDone();
+              }
+            },
+          });
+        }, idx * 420);
       });
     }
   }, []);
@@ -180,21 +227,11 @@ export default function Hero() {
               {" "}
               <h1
                 ref={nextRef}
-                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 drop-shadow-xl"
+                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 "
                 style={{
                   letterSpacing: "-0.05em",
                   position: "relative",
                   zIndex: 200,
-                  opacity: 1,
-                  visibility: "visible",
-                  transform: "none", // Prevent any transform animations
-                  transition: "none", // Prevent any CSS transitions
-                  willChange: "auto", // Don't optimize for changes
-                  animation: "none", // Prevent any CSS animations
-                  perspective: "none", // Prevent 3D effects
-                  transformOrigin: "center center", // Standard transform origin
-                  scale: 1, // Explicit scale to prevent scaling
-                  filter: "none", // No filters
                 }}
               >
                 NEXT
@@ -221,7 +258,7 @@ export default function Hero() {
               className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
               style={{ letterSpacing: "-0.05em" }}
             >
-              SOLUTION
+              SOLUTIONS
             </span>
           </div>
           <span className="font-share-tech-mono font-normal mt-10 text-[1.25rem] md:text-[1.75rem] text-white/80 tracking-tight drop-shadow-lg flex items-center gap-2 lowercase">

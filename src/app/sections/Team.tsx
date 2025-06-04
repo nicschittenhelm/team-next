@@ -15,6 +15,11 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+export const sectionMeta = {
+  id: "team",
+  title: "Team",
+};
+
 export default function Team() {
   const containerRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
