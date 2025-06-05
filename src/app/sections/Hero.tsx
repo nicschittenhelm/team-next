@@ -217,7 +217,7 @@ export default function Hero() {
       <div className="absolute inset-0 flex items-center">
         {" "}
         {/* Creates new stacking context */}
-        <div className="flex flex-col items-start justify-center h-full pl-16">
+        <div className="flex flex-col items-start justify-center h-full pl-24 md:pl-40">
           <div className="flex flex-row items-baseline gap-6">
             <div
               ref={nextBoxRef}
