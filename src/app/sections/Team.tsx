@@ -168,21 +168,22 @@ export default function Team() {
     const section = containerRef.current;
     const shaderBg = shaderBgRef.current;
 
-    // Set initial position (offscreen at bottom)
-    gsap.set(shaderBg, { yPercent: 100 });
+    // Set initial scale (50%)
+    gsap.set(shaderBg, { scale: 0.5 });
 
-    // Parallax scroll effect: animate from yPercent: 100 (offscreen) to yPercent: 0 (onscreen)
+    // Parallax scroll effect: animate from scale 0.5 (50%) to scale 1 (100%) when section is fully centered
     const trigger = ScrollTrigger.create({
       trigger: section,
       start: "top bottom",
-      end: "top top",
+      end: "center center",
       scrub: true,
       onUpdate: (self) => {
         const progress = self.progress;
         gsap.to(shaderBg, {
-          yPercent: 100 - 100 * progress,
+          scale: 0.5 + 0.5 * progress, // scale from 0.5 to 1
           overwrite: "auto",
           duration: 0.1,
+          transformOrigin: "center center",
         });
       },
     });
