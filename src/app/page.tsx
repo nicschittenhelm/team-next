@@ -7,6 +7,9 @@ import Team, { sectionMeta as teamMeta } from "./sections/Team";
 import Projects, { sectionMeta as projectsMeta } from "./sections/Projects";
 import Contact, { sectionMeta as contactMeta } from "./sections/Contact";
 import ScrollProgressIndicator from "./components/ScrollProgressIndicator";
+import Lenis from "lenis";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const sectionComponents = [
   { Component: Hero, meta: heroMeta },
@@ -18,11 +21,26 @@ const sectionComponents = [
 
 export default function Home() {
   useEffect(() => {
-    // Apply smooth scrolling to the document
-    document.documentElement.style.scrollBehavior = "smooth";
+    // Initialize Lenis
+    const lenis = new Lenis({
+      autoRaf: false,
+      // You can add more options here if needed
+    });
 
+    // Sync Lenis with GSAP ScrollTrigger
+    lenis.on("scroll", ScrollTrigger.update);
+
+    // Add Lenis's raf to GSAP's ticker
+    function gsapLenisUpdate(time: number) {
+      lenis.raf(time * 1000); // GSAP time is in seconds, Lenis expects ms
+    }
+    gsap.ticker.add(gsapLenisUpdate);
+    gsap.ticker.lagSmoothing(0);
+
+    // Clean up on unmount
     return () => {
-      document.documentElement.style.scrollBehavior = "";
+      gsap.ticker.remove(gsapLenisUpdate);
+      lenis.destroy();
     };
   }, []);
   // Define sections for the progress indicator
