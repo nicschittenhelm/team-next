@@ -52,7 +52,7 @@ export default function CustomCursor() {
   }, []);
   return (
     <>
-      <div className="fixed z-50 inset-0 h-screen bg-blend-difference pointer-events-none">
+      <div className="fixed z-[999] inset-0 h-screen bg-blend-difference pointer-events-none">
         <div
           ref={circle}
           style={{

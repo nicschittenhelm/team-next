@@ -23,6 +23,9 @@ export default function Hero() {
   const loadingRef = useRef<HTMLDivElement>(null);
   const nextBoxRef = useRef<HTMLDivElement>(null);
 
+  // Prevent ShaderGradientCanvas from being black on remount by forcing a re-render when the Hero section becomes visible
+  const shaderWrapperRef = useRef<HTMLDivElement>(null);
+
   // Advanced animation on component mount - but not for NEXT text
   useEffect(() => {
     // Setup animations for other elements only, not NEXT
@@ -168,9 +171,37 @@ export default function Hero() {
       });
     }
   }, []);
+  useEffect(() => {
+    // Listen for visibility changes using IntersectionObserver
+    const section = shaderWrapperRef.current?.parentElement?.parentElement;
+    if (!section) return;
+    let observer: IntersectionObserver | null = null;
+    let timeout: NodeJS.Timeout | null = null;
+    observer = new window.IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && shaderWrapperRef.current) {
+            // Force a style change to trigger a redraw
+            shaderWrapperRef.current.style.opacity = "0.99";
+            timeout = setTimeout(() => {
+              if (shaderWrapperRef.current)
+                shaderWrapperRef.current.style.opacity = "1";
+            }, 100);
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    observer.observe(section);
+    return () => {
+      if (observer) observer.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
+  }, []);
   return (
     <section className="relative w-full h-screen">
-      <ShaderGradientCanvas
+      <div
+        ref={shaderWrapperRef}
         style={{
           position: "absolute",
           top: 0,
@@ -179,118 +210,128 @@ export default function Hero() {
           pointerEvents: "none",
         }}
       >
-        <ShaderGradient
-          animate="on"
-          type="sphere"
-          wireframe={false}
-          shader="defaults"
-          uTime={0}
-          uSpeed={0.03}
-          uStrength={0.8}
-          uDensity={2.3}
-          uFrequency={5.5}
-          uAmplitude={0.3}
-          positionX={-0.8}
-          positionY={0.8}
-          positionZ={0}
-          rotationX={0}
-          rotationY={0}
-          rotationZ={0}
-          color1="#000000"
-          color2="#0dff00"
-          color3="#003300"
-          reflection={0.1}
-          cAzimuthAngle={180}
-          cPolarAngle={90}
-          cDistance={3.6}
-          cameraZoom={9.0}
-          lightType="3d"
-          brightness={0.8}
-          envPreset="lobby"
-          grain="off"
-          toggleAxis={false}
-          // Optional - if using transition features
-          enableTransition={false}
-        />
-      </ShaderGradientCanvas>{" "}
-      {/* Animated text content - with isolation creating a new stacking context */}
-      <div className="absolute inset-0 flex items-center">
-        {" "}
-        {/* Creates new stacking context */}
-        <div className="flex flex-col items-start justify-center h-full pl-24 md:pl-40">
-          <div className="flex flex-row items-baseline gap-6">
-            <div
-              ref={nextBoxRef}
-              className="inline-block"
-              style={{ position: "relative", zIndex: 200 }}
-            >
-              {" "}
-              <h1
-                ref={nextRef}
-                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 "
-                style={{
-                  letterSpacing: "-0.05em",
-                  position: "relative",
-                  zIndex: 200,
-                }}
-              >
-                NEXT
-              </h1>
-            </div>
-            <span
-              ref={genRef}
-              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
-              style={{ letterSpacing: "-0.05em" }}
-            >
-              GEN
-            </span>
-          </div>
-          <div className="flex flex-row gap-6 mt-4">
-            <span
-              ref={webRef}
-              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
-              style={{ letterSpacing: "-0.05em" }}
-            >
-              WEB
-            </span>
-            <span
-              ref={solutionRef}
-              className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
-              style={{ letterSpacing: "-0.05em" }}
-            >
-              SOLUTIONS
-            </span>
-          </div>
-          <span className="font-share-tech-mono font-normal mt-10 text-[1.25rem] md:text-[1.75rem] text-white/80 tracking-tight drop-shadow-lg flex items-center gap-2 lowercase">
-            <span className="text-[#0dff00] text-3xl font-bold">
-              &#47;&#47;
-            </span>
-            the benchmark for modern web development{" "}
-          </span>
-        </div>
-      </div>{" "}
-      {/* Loading overlay with specifically configured CSS to ensure text shows through */}
-      {loading && (
-        <div
-          ref={loadingRef}
-          className="pointer-events-none" /* Prevents blocking interaction */
+        <ShaderGradientCanvas
           style={{
-            willChange: "width,height,left,top",
-            position: "fixed",
+            position: "absolute",
             top: 0,
-            left: 0,
             width: "100%",
             height: "100%",
-            zIndex: 50 /* Lower z-index than text content */,
-            background: "#0dff00",
-            mixBlendMode: "normal" /* Helps with layering */,
-            contain: "paint" /* Performance optimization */,
-            transform: "translateZ(0)" /* Create a new stacking context */,
-            backfaceVisibility:
-              "hidden" /* Prevent any 3D transforms affecting other elements */,
+            pointerEvents: "none",
           }}
-        />
-      )}
+        >
+          <ShaderGradient
+            animate="on"
+            type="sphere"
+            wireframe={false}
+            shader="defaults"
+            uTime={0}
+            uSpeed={0.03}
+            uStrength={0.8}
+            uDensity={2.3}
+            uFrequency={5.5}
+            uAmplitude={0.3}
+            positionX={-0.8}
+            positionY={0.8}
+            positionZ={0}
+            rotationX={0}
+            rotationY={0}
+            rotationZ={0}
+            color1="#000000"
+            color2="#0dff00"
+            color3="#003300"
+            reflection={0.1}
+            cAzimuthAngle={180}
+            cPolarAngle={90}
+            cDistance={3.6}
+            cameraZoom={9.0}
+            lightType="3d"
+            brightness={0.8}
+            envPreset="lobby"
+            grain="off"
+            toggleAxis={false}
+            // Optional - if using transition features
+            enableTransition={false}
+          />
+        </ShaderGradientCanvas>{" "}
+        {/* Animated text content - with isolation creating a new stacking context */}
+        <div className="absolute inset-0 flex items-center">
+          {" "}
+          {/* Creates new stacking context */}
+          <div className="flex flex-col items-start justify-center h-full pl-24 md:pl-40">
+            <div className="flex flex-row items-baseline gap-6">
+              <div
+                ref={nextBoxRef}
+                className="inline-block"
+                style={{ position: "relative", zIndex: 200 }}
+              >
+                {" "}
+                <h1
+                  ref={nextRef}
+                  className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-black bg-[#0dff00] py-2 px-6 "
+                  style={{
+                    letterSpacing: "-0.05em",
+                    position: "relative",
+                    zIndex: 200,
+                  }}
+                >
+                  NEXT
+                </h1>
+              </div>
+              <span
+                ref={genRef}
+                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
+                style={{ letterSpacing: "-0.05em" }}
+              >
+                GEN
+              </span>
+            </div>
+            <div className="flex flex-row gap-6 mt-4">
+              <span
+                ref={webRef}
+                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
+                style={{ letterSpacing: "-0.05em" }}
+              >
+                WEB
+              </span>
+              <span
+                ref={solutionRef}
+                className="font-lexend text-8xl md:text-[8rem] font-bold tracking-tight uppercase text-white"
+                style={{ letterSpacing: "-0.05em" }}
+              >
+                SOLUTIONS
+              </span>
+            </div>
+            <span className="font-share-tech-mono font-normal mt-10 text-[1.25rem] md:text-[1.75rem] text-white/80 tracking-tight drop-shadow-lg flex items-center gap-2 lowercase">
+              <span className="text-[#0dff00] text-3xl font-bold">
+                &#47;&#47;
+              </span>
+              the benchmark for modern web development{" "}
+            </span>
+          </div>
+        </div>{" "}
+        {/* Loading overlay with specifically configured CSS to ensure text shows through */}
+        {loading && (
+          <div
+            ref={loadingRef}
+            className="pointer-events-none" /* Prevents blocking interaction */
+            style={{
+              willChange: "width,height,left,top",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 50 /* Lower z-index than text content */,
+              background: "#0dff00",
+              mixBlendMode: "normal" /* Helps with layering */,
+              contain: "paint" /* Performance optimization */,
+              transform: "translateZ(0)" /* Create a new stacking context */,
+              backfaceVisibility:
+                "hidden" /* Prevent any 3D transforms affecting other elements */,
+            }}
+          />
+        )}
+      </div>
     </section>
   );
 }
