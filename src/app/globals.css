@@ -56,3 +56,8 @@ body {
 .font-inter {
   font-family: var(--font-inter), Arial, Helvetica, sans-serif !important;
 }
+
+::selection {
+  background: #0dff00;
+  color: #000;
+}
