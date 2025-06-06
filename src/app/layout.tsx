@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Lexend, Inter, Share_Tech_Mono } from "next/font/google";
-import "./globals.css";
+import "../app/globals.css";
 import CustomCursor from "./components/CustomCursor";
 
 const lexend = Lexend({
