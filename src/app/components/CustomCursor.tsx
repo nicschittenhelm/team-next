@@ -30,9 +30,9 @@ export default function CustomCursor() {
     let animationFrameId;
 
     const animate = () => {
-      // Apply lerp to both x and y coordinates (0.1 is the smoothing factor)
-      cursorPos.current.x = lerp(cursorPos.current.x, mouse.current.x, 0.1);
-      cursorPos.current.y = lerp(cursorPos.current.y, mouse.current.y, 0.1);
+      // Apply lerp to both x and y coordinates (0.07 is the new, lower smoothing factor)
+      cursorPos.current.x = lerp(cursorPos.current.x, mouse.current.x, 0.2);
+      cursorPos.current.y = lerp(cursorPos.current.y, mouse.current.y, 0.2);
 
       // Update the cursor position with interpolated values
       moveCircle(cursorPos.current.x, cursorPos.current.y);
